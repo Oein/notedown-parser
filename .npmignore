@@ -29,3 +29,4 @@ dist/*.js
 
 # Keep original CSS for development, but exclude from npm
 dist/highlight-theme.css
+test.html

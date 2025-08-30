@@ -1,6 +1,6 @@
 {
   "name": "notedown-parser",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A TypeScript parser and renderer for Notedown markup language with syntax highlighting support",
   "type": "module",
   "main": "./dist/index.min.js",
@@ -80,6 +80,7 @@
     "node": ">=16.0.0"
   },
   "devDependencies": {
+    "@types/bun": "^1.2.21",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^24.3.0",
     "bun-types": "^1.2.21",

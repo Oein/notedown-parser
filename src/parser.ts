@@ -350,13 +350,15 @@ export function parseNotedown(ndText: string): NotedownDocument {
   }
 
   function parseContentLines(lines: string[]): any[] {
-    const content: any[] = [];
-    for (const line of lines) {
-      if (line.trim()) {
-        content.push({ type: "text", content: parseInline(line.trim()) });
-      }
+    // Join lines back and parse as a full Notedown document to handle nested collapses
+    const contentText = lines.join("\n");
+    if (!contentText.trim()) {
+      return [];
     }
-    return content;
+
+    // Recursively parse the content as a new Notedown document
+    const subDocument = parseNotedown(contentText);
+    return subDocument.content || [];
   }
 
   function parseAsNormalContent(text: string) {

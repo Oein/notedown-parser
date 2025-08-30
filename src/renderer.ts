@@ -164,12 +164,13 @@ export class NotedownRenderer {
       const contentDiv = this.doc.createElement("div");
       contentDiv.className = "notedown-collapse-content";
 
-      for (const contentItem of item.content) {
-        const element = this.buildContentItem(contentItem);
-        if (element) {
-          contentDiv.appendChild(element);
-        }
-      }
+      // Treat collapse content as a new Notedown document for recursive rendering
+      const NotedownRendererClass = this.constructor as typeof NotedownRenderer;
+      const subRenderer = new NotedownRendererClass(this.doc);
+      // If meta is needed, pass it; otherwise, just content
+      const subDoc = { content: item.content };
+      const subRendered = subRenderer.render(subDoc);
+      contentDiv.appendChild(subRendered);
 
       details.appendChild(contentDiv);
     }
@@ -393,6 +394,24 @@ export class NotedownRenderer {
   }
 
   renderWithStyles(parsedData: NotedownDocument): HTMLElement {
+    // Inject default Notedown styles if not present
+    if (
+      this.doc &&
+      this.doc.head &&
+      !this.doc.getElementById("notedown-default-styles")
+    ) {
+      const style = this.doc.createElement("style");
+      style.id = "notedown-default-styles";
+      style.textContent = `
+        .notedown-collapse { margin: 1em 0; border-radius: 4px; }
+        .notedown-collapse-1 { }
+        .notedown-collapse-2 { }
+        .notedown-collapse-3 { }
+        .notedown-collapse-title { font-weight: bold; cursor: pointer; }
+        .notedown-collapse-content { padding: 0.5em 1em; }
+      `;
+      this.doc.head.appendChild(style);
+    }
     const container = this.render(parsedData);
     this.applyCodeHighlighting(container);
     return container;

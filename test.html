@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Notedown Live Viewer</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+      }
+      .container {
+        display: flex;
+        height: 100vh;
+      }
+      .input-area,
+      .output-area {
+        flex: 1;
+        padding: 1em;
+        box-sizing: border-box;
+        overflow: auto;
+      }
+      .input-area {
+        border-right: 1px solid #ccc;
+        background: #f9f9f9;
+      }
+      .output-area {
+        background: #fff;
+      }
+      textarea {
+        width: 100%;
+        height: 100%;
+        font-family: monospace;
+        font-size: 1em;
+        resize: none;
+        box-sizing: border-box;
+      }
+    </style>
+    <script>
+      // Configure MathJax before loading
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"]],
+          displayMath: [["$$", "$$"]],
+        },
+        options: {
+          enableMenu: false,
+        },
+      };
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+      async
+    ></script>
+    <link rel="stylesheet" href="dist/notedown-theme.css" />
+    <link rel="stylesheet" href="dist/highlight-theme.css" />
+    <link rel="stylesheet" href="dist/notedown-theme.min.css" />
+    <link rel="stylesheet" href="dist/highlight-theme.min.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="input-area">
+        <textarea id="notedown-input">
+#> Outer Collapse
+Outer content with $x^2$ math
+##> Inner Collapse
+Inner content with $$y = mx + b$$
+\##>
+\#>
+</textarea
+        >
+      </div>
+      <div class="output-area" id="output"></div>
+    </div>
+    <script type="module">
+      import { parseNotedown } from "./dist/parser.min.js";
+      import { NotedownRenderer } from "./dist/renderer.min.js";
+      window.addEventListener("DOMContentLoaded", () => {
+        const input = document.getElementById("notedown-input");
+        const output = document.getElementById("output");
+        async function renderNotedown() {
+          const text = input.value;
+          const parsed = parseNotedown(text);
+          const renderer = new NotedownRenderer(document);
+          output.innerHTML = "";
+          const htmlElement = renderer.renderWithStyles(parsed);
+          output.appendChild(htmlElement);
+          // Wait for MathJax to be ready, then typeset
+          if (window.MathJax && window.MathJax.typeset) {
+            setTimeout(() => {
+              window.MathJax.typeset();
+            }, 100);
+          }
+        }
+        input.addEventListener("input", renderNotedown);
+        renderNotedown();
+      });
+    </script>
+  </body>
+</html>
