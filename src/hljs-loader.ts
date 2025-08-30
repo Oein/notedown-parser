@@ -13,7 +13,7 @@ declare global {
 const HLJS_VERSION = "11.9.0";
 
 // Use the full build that includes common languages
-const HLJS_FULL_CDN_URL = `https://cdn.jsdelivr.net/npm/highlight.js@${HLJS_VERSION}`;
+const HLJS_FULL_CDN_URL = `https://cdn.jsdelivr.net/npm/highlight.js@${HLJS_VERSION}/+esm`;
 
 // For fallback, also use the UMD build which includes all languages
 const HLJS_UMD_CDN_URL = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${HLJS_VERSION}/highlight.min.js`;
