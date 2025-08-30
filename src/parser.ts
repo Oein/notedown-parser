@@ -309,43 +309,128 @@ export function parseNotedown(ndText: string): NotedownDocument {
   }
 
   function parseTextContent(text: string) {
-    let remainingText = text;
+    // Instead of using regex replace which processes out of order,
+    // we need to parse the text sequentially to maintain order
+    const lines = text.split("\n");
+    let i = 0;
 
-    // Handle collapse blocks with headers (#>, ##>, etc.)
-    const headerCollapseRegex = /^(#+)>\s*(.+?)\n([\s\S]*?)\n\\\1>$/gm;
-    remainingText = remainingText.replace(
-      headerCollapseRegex,
-      (_match, hashes, title, content) => {
-        const size = hashes.length;
-        const collapseBlock = {
-          type: "collapse",
-          size,
-          text: replaceMeta(title.trim()),
-          content: parseContentLines(content.trim().split("\n")),
-        };
-        result.content.push(collapseBlock);
-        return "";
+    while (i < lines.length) {
+      const line = lines[i];
+      if (!line) {
+        i++;
+        continue;
       }
-    );
 
-    // Handle simple collapse blocks (|>)
-    const simpleCollapseRegex = /^\|>\s*(.+?)\n([\s\S]*?)\n\\\|>$/gm;
-    remainingText = remainingText.replace(
-      simpleCollapseRegex,
-      (_match, title, content) => {
-        const collapseBlock = {
-          type: "collapse",
-          text: replaceMeta(title.trim()),
-          content: parseContentLines(content.trim().split("\n")),
-        };
-        result.content.push(collapseBlock);
-        return "";
+      // Check for header collapse (#>, ##>, etc.)
+      const headerCollapseMatch = line.match(/^(#+)>\s*(.+)$/);
+      if (
+        headerCollapseMatch &&
+        headerCollapseMatch[1] &&
+        headerCollapseMatch[2]
+      ) {
+        const hashes = headerCollapseMatch[1];
+        const title = headerCollapseMatch[2];
+        const endPattern = `\\${hashes}>`;
+
+        // Find the end of this collapse block
+        let collapseContent: string[] = [];
+        let j = i + 1;
+        let foundEnd = false;
+
+        while (j < lines.length) {
+          const currentLine = lines[j];
+          if (!currentLine) {
+            j++;
+            continue;
+          }
+          if (currentLine.trim() === endPattern) {
+            foundEnd = true;
+            break;
+          }
+          collapseContent.push(currentLine);
+          j++;
+        }
+
+        if (foundEnd) {
+          const collapseBlock = {
+            type: "collapse",
+            size: hashes.length,
+            text: replaceMeta(title.trim()),
+            content: parseContentLines(collapseContent),
+          };
+          result.content.push(collapseBlock);
+          i = j + 1; // Skip past the end marker
+          continue;
+        }
       }
-    );
 
-    // Parse remaining content as paragraphs
-    if (remainingText.trim()) {
-      parseAsNormalContent(remainingText.trim());
+      // Check for simple collapse (|>)
+      const simpleCollapseMatch = line.match(/^\|>\s*(.+)$/);
+      if (simpleCollapseMatch && simpleCollapseMatch[1]) {
+        const title = simpleCollapseMatch[1];
+        const endPattern = "\\|>";
+
+        // Find the end of this collapse block
+        let collapseContent: string[] = [];
+        let j = i + 1;
+        let foundEnd = false;
+
+        while (j < lines.length) {
+          const currentLine = lines[j];
+          if (!currentLine) {
+            j++;
+            continue;
+          }
+          if (currentLine.trim() === endPattern) {
+            foundEnd = true;
+            break;
+          }
+          collapseContent.push(currentLine);
+          j++;
+        }
+
+        if (foundEnd) {
+          const collapseBlock = {
+            type: "collapse",
+            text: replaceMeta(title.trim()),
+            content: parseContentLines(collapseContent),
+          };
+          result.content.push(collapseBlock);
+          i = j + 1; // Skip past the end marker
+          continue;
+        }
+      }
+
+      // If we get here, this line is not part of a collapse
+      // Collect sequential non-collapse lines
+      let normalContent: string[] = [];
+      while (i < lines.length) {
+        const currentLine = lines[i];
+        if (!currentLine) {
+          normalContent.push("");
+          i++;
+          continue;
+        }
+
+        // Check if this line starts a new collapse
+        if (
+          currentLine.match(/^(#+)>\s*(.+)$/) ||
+          currentLine.match(/^\|>\s*(.+)$/)
+        ) {
+          break;
+        }
+
+        normalContent.push(currentLine);
+        i++;
+      }
+
+      // Parse the collected normal content
+      if (normalContent.length > 0) {
+        const normalText = normalContent.join("\n").trim();
+        if (normalText) {
+          parseAsNormalContent(normalText);
+        }
+      }
     }
   }
 

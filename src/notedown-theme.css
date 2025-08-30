@@ -5,6 +5,20 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  position: relative;
+}
+
+/* Nested containers should not have centering styles */
+.notedown-container .notedown-container {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  position: static;
+}
+
+.notedown-container > * {
+  position: static;
+  float: none;
 }
 .notedown-title {
   margin-top: 2em;
@@ -307,13 +321,46 @@
 .notedown-collapse {
   margin: 1em 0;
   border-radius: 4px;
+  border: 1px solid #e1e8ed;
+  background-color: #f8f9fa;
+  position: static;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .notedown-collapse-title {
   font-weight: bold;
   cursor: pointer;
+  padding: 0.75em 1em;
+  margin: 0;
+  background-color: #f1f3f4;
+  border-bottom: 1px solid #e1e8ed;
+  user-select: none;
+}
+
+.notedown-collapse-title:hover {
+  background-color: #e8eaed;
 }
 
 .notedown-collapse-content {
-  padding: 0.5em 1em;
+  padding: 1em;
+  background-color: #ffffff;
+  position: static;
+  display: block;
+  clear: both;
+}
+
+.notedown-collapse[open] .notedown-collapse-title {
+  border-bottom: 1px solid #e1e8ed;
+}
+
+/* Ensure collapse elements stay in document flow */
+details.notedown-collapse {
+  position: static !important;
+  float: none !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
 }

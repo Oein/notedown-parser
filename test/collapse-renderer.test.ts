@@ -113,17 +113,17 @@ describe("Collapse Renderer with Size", () => {
 
     const result = renderer.renderWithStyles(testData);
 
-    // Check that the style element is present in the document head
-    const styleElement = document.getElementById("notedown-default-styles");
-    expect(styleElement).toBeTruthy();
+    // Check that the HTML structure is correct
+    const html = result.innerHTML;
+    expect(html).toContain('class="notedown-collapse notedown-collapse-1"');
 
-    const styleContent = styleElement!.textContent || "";
+    // Since styles are now external, we don't check for inline styles
+    // Instead we verify the CSS classes are applied correctly
 
-    // Check for size-specific CSS rules
-    expect(styleContent).toContain(".notedown-collapse-1");
-    expect(styleContent).toContain(".notedown-collapse-2");
-    expect(styleContent).toContain(".notedown-collapse-3");
-    expect(styleContent).toContain("margin: 1em 0");
+    // Verify that the proper CSS classes are present in the HTML
+    expect(html).toContain("notedown-collapse-1");
+    expect(html).toContain('class="notedown-collapse-title"');
+    expect(html).toContain('class="notedown-collapse-content"');
   });
 
   test("should render collapse with proper nesting structure", () => {

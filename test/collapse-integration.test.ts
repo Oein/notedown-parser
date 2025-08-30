@@ -72,10 +72,10 @@ More regular text after collapses.`;
     expect(html).toContain("Level 3 Collapse");
     expect(html).toContain("Simple Collapse");
 
-    // Verify CSS is included
-    const styleElement = document.getElementById("notedown-default-styles");
-    expect(styleElement).toBeTruthy();
-    expect(styleElement!.textContent).toContain(".notedown-collapse-1");
+    // Verify CSS classes are applied correctly in HTML structure
+    expect(html).toContain('class="notedown-collapse notedown-collapse-1"');
+    expect(html).toContain('class="notedown-collapse notedown-collapse-2"');
+    expect(html).toContain('class="notedown-collapse notedown-collapse-3"');
   });
 
   test("should properly handle nested content in collapse blocks", () => {
