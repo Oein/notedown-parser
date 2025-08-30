@@ -1,0 +1,16 @@
+```
+코드 적기
+```
+
+```ts
+let a: number = 123; // With lang support
+function say() {
+    console.log("Hello World");
+}
+```
+
+```
+Code with ``` syntax mark
+\`\`\`
+\```
+```

@@ -1,0 +1,286 @@
+{
+  "meta": {
+    "title": "LaTeX Sample Document",
+    "author": "Notedown User"
+  },
+  "content": [
+    {
+      "type": "title",
+      "size": 1,
+      "text": [
+        {
+          "text": "LaTeX Support in Notedown"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "This document demonstrates LaTeX formula support in Notedown."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "title",
+      "size": 2,
+      "text": [
+        {
+          "text": "Inline LaTeX Formulas"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "You can use inline LaTeX formulas like "
+            },
+            {
+              "format": "latex",
+              "formula": "E = mc^2",
+              "content": [
+                {
+                  "text": "E = mc^2"
+                }
+              ]
+            },
+            {
+              "text": " within a paragraph."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "Some more examples:"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- The quadratic formula: "
+            },
+            {
+              "format": "latex",
+              "formula": "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}",
+              "content": [
+                {
+                  "text": "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- Euler's identity: "
+            },
+            {
+              "format": "latex",
+              "formula": "e^{i\\pi} + 1 = 0",
+              "content": [
+                {
+                  "text": "e^{i\\pi} + 1 = 0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- The normal distribution: "
+            },
+            {
+              "format": "latex",
+              "formula": "f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} e^{-\\frac{1}{2}\\left(\\frac{x-\\mu}{\\sigma}\\right)^2}",
+              "content": [
+                {
+                  "text": "f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} e^{-\\frac{1}{2}\\left(\\frac{x-\\mu}{\\sigma}\\right)^2}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- Pythagorean theorem: "
+            },
+            {
+              "format": "latex",
+              "formula": "a^2 + b^2 = c^2",
+              "content": [
+                {
+                  "text": "a^2 + b^2 = c^2"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "title",
+      "size": 2,
+      "text": [
+        {
+          "text": "Mixed Formatting"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "You can mix LaTeX with other formatting:"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- Bold with LaTeX: "
+            },
+            {
+              "format": "bold",
+              "content": [
+                {
+                  "text": "The formula "
+                },
+                {
+                  "format": "latex",
+                  "formula": "E = mc^2",
+                  "content": [
+                    {
+                      "text": "E = mc^2"
+                    }
+                  ]
+                },
+                {
+                  "text": " is famous"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- Italic with LaTeX: "
+            },
+            {
+              "format": "italic",
+              "content": [
+                {
+                  "text": "The value of "
+                },
+                {
+                  "format": "latex",
+                  "formula": "\\pi",
+                  "content": [
+                    {
+                      "text": "\\pi"
+                    }
+                  ]
+                },
+                {
+                  "text": " is approximately 3.14159"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- Code and LaTeX: Use "
+            },
+            {
+              "format": "code",
+              "content": [
+                {
+                  "text": "Math.pow(2, n)"
+                }
+              ]
+            },
+            {
+              "text": " to calculate "
+            },
+            {
+              "format": "latex",
+              "formula": "2^n",
+              "content": [
+                {
+                  "text": "2^n"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

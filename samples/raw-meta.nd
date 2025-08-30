@@ -1,0 +1,41 @@
+\meta title=Raw Meta Example
+\meta author=Notedown User
+\meta version=1.0
+
+# @{title} - Raw Meta Demo
+
+## About This Document
+
+This document demonstrates how to use raw meta text in Notedown.
+
+- Normal meta reference: @{title}
+- Escaped (raw) meta reference: \@{title}
+- Another meta reference: @{author}
+- Another escaped meta reference: \@{author}
+
+## Using Raw Meta Text
+
+Sometimes you might want to show the actual meta syntax in your document, rather than having it replaced by the meta value. You can do this by adding a backslash before the meta reference.
+
+Example:
+
+```
+To include a meta reference like @{version}, use the @{...} syntax.
+If you want to show the actual syntax, use \@{version} instead.
+```
+
+## Mixed Usage
+
+You can mix regular and raw meta references in the same line:
+
+This document (@{title}) was created by @{author} and shows how to use \@{meta} syntax.
+
+## In Different Contexts
+
+- In bold text: **Regular: @{title}, Raw: \@{title}**
+- In italic text: *Regular: @{author}, Raw: \@{author}*
+- In code: `Regular: @{version}, Raw: \@{version}`
+
+## Conclusion
+
+Using raw meta text allows you to explain the meta reference syntax within your document without it being replaced by the actual meta values.

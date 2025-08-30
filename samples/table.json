@@ -1,0 +1,776 @@
+{
+  "meta": {
+    "title": "Table Examples",
+    "author": "Notedown Team"
+  },
+  "content": [
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 1,
+          "text": [
+            {
+              "text": "Table Support in Notedown"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "This sample demonstrates the table feature in Notedown."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 2,
+          "text": [
+            {
+              "text": "Basic Table"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "rows": [
+        {
+          "isHeader": true,
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Header 1"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Header 2"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Header 3"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Row 1"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Data"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Value"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Row 2"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Data"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Value"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 2,
+          "text": [
+            {
+              "text": "Table with Alignment"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "rows": [
+        {
+          "isHeader": true,
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Left-aligned"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Center-aligned"
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "content": [
+                {
+                  "text": "Right-aligned"
+                }
+              ],
+              "align": "right"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Left"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Center"
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "content": [
+                {
+                  "text": "Right"
+                }
+              ],
+              "align": "right"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Column"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Column"
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "content": [
+                {
+                  "text": "Column"
+                }
+              ],
+              "align": "right"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 2,
+          "text": [
+            {
+              "text": "Table with Formatting"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "rows": [
+        {
+          "isHeader": true,
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Format Type"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Example"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "format": "bold",
+                  "content": [
+                    {
+                      "text": "Bold"
+                    }
+                  ]
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "This text is in "
+                },
+                {
+                  "format": "bold",
+                  "content": [
+                    {
+                      "text": "bold"
+                    }
+                  ]
+                },
+                {
+                  "text": "."
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "format": "italic",
+                  "content": [
+                    {
+                      "text": "Italic"
+                    }
+                  ]
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "This text is in "
+                },
+                {
+                  "format": "italic",
+                  "content": [
+                    {
+                      "text": "italic"
+                    }
+                  ]
+                },
+                {
+                  "text": "."
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "format": "code",
+                  "content": [
+                    {
+                      "text": "Code"
+                    }
+                  ]
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "This is "
+                },
+                {
+                  "format": "code",
+                  "content": [
+                    {
+                      "text": "inline code"
+                    }
+                  ]
+                },
+                {
+                  "text": "."
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Links"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "This is a "
+                },
+                {
+                  "link": "https://google.com",
+                  "text": "link to Google"
+                },
+                {
+                  "text": "."
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 2,
+          "text": [
+            {
+              "text": "Table with Meta References"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "rows": [
+        {
+          "isHeader": true,
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Property"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Value"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Title"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "meta": "title"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Author"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "meta": "author"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Count"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "3 tables"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 2,
+          "text": [
+            {
+              "text": "Complex Table Example"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "rows": [
+        {
+          "isHeader": true,
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Feature"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Description"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Support"
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "content": [
+                {
+                  "text": "Example"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Headers"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Table headers"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "✅"
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "content": [
+                {
+                  "text": "The first row"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Alignment"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Text alignment"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "✅"
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "content": [
+                {
+                  "text": "Left, center, right"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Formatting"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Text styling"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "✅"
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "content": [
+                {
+                  "format": "bold",
+                  "content": [
+                    {
+                      "text": "Bold"
+                    }
+                  ]
+                },
+                {
+                  "text": ", "
+                },
+                {
+                  "format": "italic",
+                  "content": [
+                    {
+                      "text": "Italic"
+                    }
+                  ]
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "Meta Refs"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Variable references"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "✅"
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "content": [
+                {
+                  "meta": "title"
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        },
+        {
+          "cells": [
+            {
+              "content": [
+                {
+                  "text": "LaTeX"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "Math formulas"
+                }
+              ],
+              "align": "left"
+            },
+            {
+              "content": [
+                {
+                  "text": "✅"
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "content": [
+                {
+                  "format": "latex",
+                  "formula": "E = mc^2",
+                  "content": [
+                    {
+                      "text": "E = mc^2"
+                    }
+                  ]
+                }
+              ],
+              "align": "left"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

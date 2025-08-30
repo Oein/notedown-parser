@@ -1,0 +1,65 @@
+{
+  "content": [
+    {
+      "type": "collapse",
+      "size": 1,
+      "text": [{ "text": "접을 수 있는 제목" }],
+      "content": [
+        {
+          "type": "text",
+          "content": [{ "text": "제목 안의 본문" }]
+        }
+      ]
+    },
+    {
+      "type": "collapse",
+      "size": 2,
+      "text": [{ "text": "접을 수 있는 2제목" }],
+      "content": [
+        {
+          "type": "text",
+          "content": [{ "text": "제목 안의 본문" }]
+        }
+      ]
+    },
+    {
+      "type": "collapse",
+      "size": 3,
+      "text": [{ "text": "접을 수 있는 3제목" }],
+      "content": [
+        {
+          "type": "text",
+          "content": [{ "text": "제목 안의 본문" }]
+        }
+      ]
+    },
+    {
+      "type": "collapse",
+      "text": [{ "text": "그냥 접을 수 있는 본문" }],
+      "content": [
+        {
+          "type": "text",
+          "content": [{ "text": "asdsd" }]
+        }
+      ]
+    },
+    {
+      "type": "collapse",
+      "text": [{ "text": "그냥 접을 수 있는 본문 2" }],
+      "content": [
+        {
+          "type": "text",
+          "content": [{ "text": "\\|>" }]
+        },
+        {
+          "type": "text",
+          "content": [{ "text": "접기 탈출 문법을 보여주기" }]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "text": "탈출 문자로 탈출 가능" }]
+    }
+  ]
+}

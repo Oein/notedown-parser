@@ -1,0 +1,17 @@
+{
+  "content": [
+    {
+      "type": "code",
+      "content": "코드 적기"
+    },
+    {
+      "type": "code",
+      "lang": "ts",
+      "content": "let a: number = 123; // With lang support\nfunction say() {\n    console.log(\"Hello World\");\n}"
+    },
+    {
+      "type": "code",
+      "content": "Code with ``` syntax mark\n\\`\\`\\`\n```"
+    }
+  ]
+}

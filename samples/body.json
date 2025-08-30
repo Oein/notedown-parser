@@ -1,0 +1,60 @@
+{
+  "content": [
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [{ "text": "본문을 이렇게 적을 수 있음." }]
+        },
+        {
+          "type": "text",
+          "content": [{ "text": "같은 문단에서 내려쓰기를 할 수 있음." }]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [{ "text": "두번 내려쓰면 다음 문단으로 전환" }]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [{ "text": "세번 내려 써도 두번 한것과 같은 효과임" }]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            { "text": "탈출 문자를 활용해서 다음 문단으로 내릴 수 있음" }
+          ]
+        },
+        {
+          "type": "newline"
+        },
+        {
+          "type": "newline"
+        },
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "탈출 문자를 활용해서 같은 문단 안에서 여러 줄바꿈을 할 수 있음"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

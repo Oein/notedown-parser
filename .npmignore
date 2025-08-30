@@ -1,0 +1,31 @@
+# Source files
+src/
+samples/
+
+# Config files
+tsconfig.json
+webpack.config.js
+.gitignore
+
+# Development files
+*.log
+coverage/
+.env*
+.DS_Store
+
+# Test files
+test/
+tests/
+__tests__/
+*.test.*
+*.spec.*
+
+# Build artifacts that shouldn't be published
+*.tgz
+
+# Original (non-minified) JS files - keep only minified versions
+dist/*.js
+!dist/*.min.js
+
+# Keep original CSS for development, but exclude from npm
+dist/highlight-theme.css

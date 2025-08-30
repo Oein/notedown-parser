@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "title": "메타 리딩 테스트",
+    "meta2": "메타 여러개 불러오기"
+  },
+  "content": [
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 1,
+          "text": [{ "text": "메타로 제목 쓰기, " }, { "meta": "title" }]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            { "text": "본문, 메타 문법을 그대로 내보내기 " },
+            { "meta": "title" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "중간 부분에서 메타로 쓰인것은 인식이 되지 않고 문자 그대로 출력됨"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "\\meta nonmeta=1234"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

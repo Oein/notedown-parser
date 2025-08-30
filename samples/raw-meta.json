@@ -1,0 +1,323 @@
+{
+  "meta": {
+    "title": "Raw Meta Example",
+    "author": "Notedown User",
+    "version": "1.0"
+  },
+  "content": [
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 1,
+          "text": [
+            {
+              "meta": "title"
+            },
+            {
+              "text": " - Raw Meta Demo"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 2,
+          "text": [
+            {
+              "text": "About This Document"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "This document demonstrates how to use raw meta text in Notedown."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- Normal meta reference: "
+            },
+            {
+              "meta": "title"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- Escaped (raw) meta reference: @{title}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- Another meta reference: "
+            },
+            {
+              "meta": "author"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- Another escaped meta reference: @{author}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 2,
+          "text": [
+            {
+              "text": "Using Raw Meta Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "Sometimes you might want to show the actual meta syntax in your document, rather than having it replaced by the meta value. You can do this by adding a backslash before the meta reference."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "Example:"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "code",
+      "content": "To include a meta reference like @{version}, use the @{...} syntax.\nIf you want to show the actual syntax, use \\@{version} instead."
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 2,
+          "text": [
+            {
+              "text": "Mixed Usage"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "You can mix regular and raw meta references in the same line:"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "This document ("
+            },
+            {
+              "meta": "title"
+            },
+            {
+              "text": ") was created by "
+            },
+            {
+              "meta": "author"
+            },
+            {
+              "text": " and shows how to use @{meta} syntax."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 2,
+          "text": [
+            {
+              "text": "In Different Contexts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- In bold text: "
+            },
+            {
+              "format": "bold",
+              "content": [
+                {
+                  "text": "Regular: "
+                },
+                {
+                  "meta": "title"
+                },
+                {
+                  "text": ", Raw: @{title}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- In italic text: "
+            },
+            {
+              "format": "italic",
+              "content": [
+                {
+                  "text": "Regular: "
+                },
+                {
+                  "meta": "author"
+                },
+                {
+                  "text": ", Raw: @{author}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "- In code: "
+            },
+            {
+              "format": "code",
+              "content": [
+                {
+                  "text": "Regular: @{version}, Raw: \\@{version}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "title",
+          "size": 2,
+          "text": [
+            {
+              "text": "Conclusion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "Using raw meta text allows you to explain the meta reference syntax within your document without it being replaced by the actual meta values."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

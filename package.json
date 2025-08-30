@@ -1,0 +1,107 @@
+{
+  "name": "notedown-parser",
+  "version": "1.0.0",
+  "description": "A TypeScript parser and renderer for Notedown markup language with syntax highlighting support",
+  "type": "module",
+  "main": "./dist/index.min.js",
+  "module": "./dist/index.min.js",
+  "browser": "./dist/index.min.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.min.js",
+      "require": "./dist/index.min.js",
+      "browser": "./dist/index.min.js"
+    },
+    "./parser": {
+      "types": "./dist/parser.d.ts",
+      "import": "./dist/parser.min.js",
+      "require": "./dist/parser.min.js",
+      "browser": "./dist/parser.min.js"
+    },
+    "./renderer": {
+      "types": "./dist/renderer.d.ts",
+      "import": "./dist/renderer.min.js",
+      "require": "./dist/renderer.min.js",
+      "browser": "./dist/renderer.min.js"
+    },
+    "./highlighter": {
+      "types": "./dist/highlighter.d.ts",
+      "import": "./dist/highlighter.min.js",
+      "require": "./dist/highlighter.min.js",
+      "browser": "./dist/highlighter.min.js"
+    },
+    "./highlighter-loader": {
+      "types": "./dist/highlighter-loader.d.ts",
+      "import": "./dist/highlighter-loader.min.js",
+      "require": "./dist/highlighter-loader.min.js",
+      "browser": "./dist/highlighter-loader.min.js"
+    },
+    "./hljs-loader": {
+      "types": "./dist/hljs-loader.d.ts",
+      "import": "./dist/hljs-loader.min.js",
+      "require": "./dist/hljs-loader.min.js",
+      "browser": "./dist/hljs-loader.min.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.min.js",
+      "require": "./dist/types.min.js",
+      "browser": "./dist/types.min.js"
+    },
+    "./highlight-theme.css": "./dist/highlight-theme.min.css"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "notedown",
+    "parser",
+    "markdown",
+    "renderer",
+    "syntax-highlighting",
+    "typescript"
+  ],
+  "author": "Oein <oein0219@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Oein/notedown-parser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Oein/notedown-parser/issues"
+  },
+  "homepage": "https://github.com/Oein/notedown-parser#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^24.3.0",
+    "bun-types": "^1.2.21",
+    "clean-css-cli": "^5.6.3",
+    "jsdom": "^26.1.0",
+    "terser-webpack-plugin": "^5.3.14",
+    "ts-loader": "^9.5.4",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "highlight.js": "^11.11.1"
+  },
+  "scripts": {
+    "build": "npx tsc && cp src/highlight-theme.css dist/",
+    "build:minify": "npm run build && npx webpack && npx cleancss -o dist/highlight-theme.min.css src/highlight-theme.css",
+    "build:publish": "npm run build:minify && npm run clean:original",
+    "clean": "rm -rf dist",
+    "clean:original": "find dist -name '*.js' ! -name '*.min.js' -delete && rm -f dist/highlight-theme.css",
+    "prepublishOnly": "npm run clean && npm run build:publish",
+    "test": "echo \"No tests specified\" && exit 0"
+  }
+}

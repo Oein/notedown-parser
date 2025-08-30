@@ -1,0 +1,55 @@
+\meta title=LaTeX Sample Document
+\meta author=Notedown User
+
+# LaTeX Support in Notedown
+
+This document demonstrates LaTeX formula support in Notedown.
+
+## Inline LaTeX Formulas
+
+You can use inline LaTeX formulas like $E = mc^2$ within a paragraph.
+
+Some more examples:
+
+- The quadratic formula: $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
+- Euler's identity: $e^{i\pi} + 1 = 0$
+- The normal distribution: $f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}$
+- Pythagorean theorem: $a^2 + b^2 = c^2$
+
+## Mixed Formatting
+
+You can mix LaTeX with other formatting:
+
+- Bold with LaTeX: **The formula $E = mc^2$ is famous**
+- Italic with LaTeX: *The value of $\pi$ is approximately 3.14159*
+- Code and LaTeX: Use `Math.pow(2, n)` to calculate $2^n$
+
+## More Complex Examples
+
+1. Maxwell's Equations:
+   - $\nabla \cdot \vec{E} = \frac{\rho}{\varepsilon_0}$
+   - $\nabla \cdot \vec{B} = 0$
+   - $\nabla \times \vec{E} = -\frac{\partial \vec{B}}{\partial t}$
+   - $\nabla \times \vec{B} = \mu_0 \vec{J} + \mu_0 \varepsilon_0 \frac{\partial \vec{E}}{\partial t}$
+
+2. Einstein Field Equations:
+   $G_{\mu\nu} = 8\pi G T_{\mu\nu}$
+
+3. Schrödinger Equation:
+   $i\hbar\frac{\partial}{\partial t}\Psi(\mathbf{r},t) = \hat H \Psi(\mathbf{r},t)$
+
+## LaTeX in Collapse Blocks
+
+#> Mathematical Formulas
+Here are some important mathematical formulas:
+
+1. Euler's formula for complex numbers:
+   $e^{ix} = \cos(x) + i\sin(x)$
+
+2. The Riemann zeta function:
+   $\zeta(s) = \sum_{n=1}^{\infty} \frac{1}{n^s}$
+\#>
+
+## Conclusion
+
+LaTeX support makes it easy to include mathematical formulas in your Notedown documents!

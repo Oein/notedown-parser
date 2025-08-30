@@ -1,0 +1,173 @@
+{
+  "content": [
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            { "text": "본문 안에서 " },
+            {
+              "format": "bold",
+              "content": [
+                {
+                  "text": "Bold체"
+                }
+              ]
+            },
+            { "text": " " },
+            {
+              "format": "italic",
+              "content": [
+                {
+                  "text": "Italic 체"
+                }
+              ]
+            },
+            {
+              "text": " "
+            },
+            {
+              "format": "underline",
+              "content": [
+                {
+                  "text": "Underline"
+                }
+              ]
+            },
+            {
+              "text": " "
+            },
+            {
+              "format": "crossline",
+              "content": [
+                {
+                  "text": "Crossline"
+                }
+              ]
+            },
+            {
+              "text": " "
+            },
+            {
+              "format": "code",
+              "content": [
+                {
+                  "text": "Code"
+                }
+              ]
+            },
+            {
+              "text": " "
+            },
+            {
+              "format": "code",
+              "content": [
+                {
+                  "text": "Code with ` code syntax mark"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "본문을 "
+            },
+            {
+              "format": "color",
+              "foreground": "red",
+              "content": [
+                {
+                  "text": "빨간 글씨"
+                }
+              ]
+            },
+            {
+              "text": " "
+            },
+            {
+              "format": "color",
+              "background": "blue",
+              "content": [
+                {
+                  "text": "파란 배경"
+                }
+              ]
+            },
+            {
+              "text": " "
+            },
+            {
+              "format": "color",
+              "foreground": "fff",
+              "background": "000",
+              "content": [
+                {
+                  "text": "검정 배경 흰 글씨"
+                }
+              ]
+            },
+            {
+              "text": " |f#그저 아무것도 꾸미지 않았으나 색칠 문법 쓰기|"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "본몬을 |f#red,빨간 글씨로 표현되는 문법을 가진 그냥 글씨| "
+            },
+            {
+              "format": "color",
+              "text": "색칠 구문 안에 있으나 아무 색칠도 하지 않은 글씨"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "링크 넣기 "
+            },
+            {
+              "link": "https://google.com",
+              "text": "링크 텍스트"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "content": [
+            {
+              "text": "이미지 넣기"
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "link": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png",
+          "alt": "이미지 alt"
+        }
+      ]
+    }
+  ]
+}
