@@ -6,3 +6,7 @@
 4. Test all of cases after you make a feature.
 5. Test scripts must be named as `debug-{what ever you want}.js`
 6. This project follows markdown syntax.
+7. If you want to add css to project, do not use typescript inline style adder. Add it to notedown-theme.css and add description what it does to comment.
+8. Do not use whatever thing to run code directly in terminal. Create debug script, run, and delete it.
+9. There is no timeout command in this environment
+10. Bun test does not support timeout

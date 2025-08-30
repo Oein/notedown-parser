@@ -434,11 +434,204 @@ export class NotedownRenderer {
   }
 
   renderWithStyles(parsedData: NotedownDocument): HTMLElement {
-    // Note: Styles are now handled by notedown-theme.css
-    // No inline CSS injection needed
+    // Inject styles if they don't exist yet
+    this.injectDefaultStyles();
+
     const container = this.render(parsedData);
     this.applyCodeHighlighting(container);
     return container;
+  }
+
+  private injectDefaultStyles(): void {
+    // Check if styles are already injected
+    if (this.doc.getElementById("notedown-default-styles")) {
+      return;
+    }
+
+    // Create style element
+    const styleElement = this.doc.createElement("style");
+    styleElement.id = "notedown-default-styles";
+    styleElement.textContent = this.getDefaultStyles();
+
+    // Inject into head if it exists, otherwise into body
+    const head = this.doc.head || this.doc.getElementsByTagName("head")[0];
+    if (head) {
+      head.appendChild(styleElement);
+    } else {
+      this.doc.body?.appendChild(styleElement);
+    }
+  }
+
+  private getDefaultStyles(): string {
+    // Include the CSS from notedown-theme.css
+    return `
+.notedown-container {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+}
+
+/* Nested containers should not have centering styles */
+.notedown-container .notedown-container {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  position: static;
+}
+
+.notedown-container > * {
+  position: static;
+  float: none;
+}
+.notedown-title {
+  margin-top: 2em;
+  margin-bottom: 1em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.notedown-title-1 {
+  font-size: 2.5em;
+}
+.notedown-title-2 {
+  font-size: 2em;
+}
+.notedown-title-3 {
+  font-size: 1.75em;
+}
+.notedown-title-4 {
+  font-size: 1.5em;
+}
+.notedown-title-5 {
+  font-size: 1.25em;
+}
+.notedown-title-6 {
+  font-size: 1em;
+}
+.notedown-description {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 1em;
+}
+.notedown-paragraph {
+  margin-bottom: 1em;
+}
+.notedown-code-block {
+  background: #f6f8fa;
+  border: 1px solid #d1d9e0;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
+  font-size: 0.9em;
+  margin: 1em 0;
+  position: relative;
+}
+
+.notedown-collapse {
+  border: 1px solid #d1d9e0;
+  border-radius: 6px;
+  margin: 1em 0;
+}
+.notedown-collapse-1 .notedown-collapse-title {
+  background: #e6f3ff;
+  font-size: 1.3em;
+  font-weight: 700;
+  border-left: 4px solid #0969da;
+}
+.notedown-collapse-2 .notedown-collapse-title {
+  background: #f0f6ff;
+  font-size: 1.15em;
+  font-weight: 650;
+  border-left: 4px solid #4a90e2;
+}
+.notedown-collapse-3 .notedown-collapse-title {
+  background: #f6f9ff;
+  font-size: 1.05em;
+  font-weight: 600;
+  border-left: 4px solid #8bb4e8;
+}
+.notedown-collapse-title {
+  background: #f6f8fa;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.notedown-collapse-content {
+  padding: 16px;
+}
+
+/* List Styles */
+.notedown-list {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.notedown-list-ordered {
+  list-style-type: decimal;
+}
+
+.notedown-list-unordered {
+  list-style-type: disc;
+}
+
+.notedown-list-item {
+  margin: 0.5em 0;
+  line-height: 1.6;
+  position: relative;
+}
+
+/* Collapse Styles */
+.notedown-collapse {
+  margin: 1em 0;
+  border-radius: 4px;
+  border: 1px solid #e1e8ed;
+  background-color: #f8f9fa;
+  position: static;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.notedown-collapse-title {
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0.75em 1em;
+  margin: 0;
+  background-color: #f1f3f4;
+  border-bottom: 1px solid #e1e8ed;
+  user-select: none;
+}
+
+.notedown-collapse-title:hover {
+  background-color: #e8eaed;
+}
+
+.notedown-collapse-content {
+  padding: 1em;
+  background-color: #ffffff;
+  position: static;
+  display: block;
+  clear: both;
+}
+
+.notedown-collapse[open] .notedown-collapse-title {
+  border-bottom: 1px solid #e1e8ed;
+}
+
+/* Ensure collapse elements stay in document flow */
+details.notedown-collapse {
+  position: static !important;
+  float: none !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+`;
   }
 
   private applyCodeHighlighting(container: HTMLElement): void {

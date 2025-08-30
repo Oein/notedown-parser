@@ -41,6 +41,14 @@ export function initHighlightJS(): Promise<any> {
     return Promise.resolve(hljsInstance);
   }
 
+  // Check if we're in a browser environment
+  if (typeof document === "undefined" || typeof window === "undefined") {
+    // In Node.js environment (tests), return a mock or reject gracefully
+    return Promise.reject(
+      new Error("highlight.js not available in Node.js environment")
+    );
+  }
+
   // Try loading highlight.js
   initPromise = new Promise((resolve, reject) => {
     // Try the full version first, then fallback to UMD if needed

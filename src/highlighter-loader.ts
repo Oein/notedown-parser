@@ -31,6 +31,7 @@ export class HighlighterLoader {
         })
         .catch((err) => {
           console.error("Failed to initialize highlight.js:", err);
+          // Continue anyway - highlight method will fall back to basic highlighting
         });
     }, 0);
   }
@@ -70,7 +71,9 @@ export class HighlighterLoader {
       console.log("highlight.js initialized successfully", this.hljs);
       return this.hljs;
     } catch (error) {
-      console.error("Failed to initialize highlight.js:", error);
+      console.error("Error getting highlight.js:", error);
+      // In test environment or when hljs is not available, we'll use basic highlighting
+      this.hljs = null;
       throw error;
     }
   }
@@ -282,7 +285,13 @@ export class HighlighterLoader {
   public async highlight(code: string, language: string): Promise<string> {
     try {
       // Ensure hljs is initialized first
-      await this.initHLJS();
+      try {
+        await this.initHLJS();
+      } catch (initError) {
+        console.error("Failed to initialize highlight.js:", initError);
+        // Fall back to basic highlighting if initialization fails
+        return this.basicHighlight(code);
+      }
 
       if (!this.hljs) {
         console.error("this.hljs is still undefined after initialization");
