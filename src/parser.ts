@@ -376,6 +376,12 @@ export function parseNotedown(ndText: string): NotedownDocument {
         continue;
       }
 
+      // Check if this paragraph is a list
+      if (isList(rawPara)) {
+        result.content.push(parseList(rawPara));
+        continue;
+      }
+
       let para = rawPara.replace(/\\np/g, "");
       const lines = para.split(/\n/);
       const paraContent: any[] = [];
@@ -493,6 +499,152 @@ export function parseNotedown(ndText: string): NotedownDocument {
     });
 
     return table;
+  }
+
+  // Helper functions for list parsing
+  function isList(text: string): boolean {
+    const lines = text.split(/\n/).filter(Boolean);
+    if (lines.length === 0) return false;
+
+    // Check if the first non-empty line is a list item
+    const firstLine = lines[0]?.trim();
+    if (!firstLine) return false;
+    return /^\d+\.\s+/.test(firstLine) || /^[-*+]\s+/.test(firstLine);
+  }
+
+  function parseList(text: string): any {
+    const lines = text.split(/\n/).filter(Boolean);
+    if (lines.length === 0) return { type: "list", ordered: false, items: [] };
+
+    return parseListLines(lines, 0).list;
+  }
+
+  function parseListLines(
+    lines: string[],
+    startIndex: number
+  ): { list: any; nextIndex: number } {
+    const items: any[] = [];
+    let i = startIndex;
+    let currentListType: "ordered" | "unordered" | null = null;
+    let baseIndent = -1; // Track the base indentation level for this list
+
+    while (i < lines.length) {
+      const line = lines[i];
+      if (!line) {
+        i++;
+        continue;
+      }
+
+      const trimmedLine = line.trim();
+
+      // Skip empty lines
+      if (!trimmedLine) {
+        i++;
+        continue;
+      }
+
+      // Check indentation level
+      const indent = line.length - line.trimStart().length;
+
+      // If we've established a base indentation and this line is less indented,
+      // it belongs to a parent list
+      if (baseIndent >= 0 && indent < baseIndent) {
+        break;
+      }
+
+      // Check if this line is a list item
+      const orderedMatch = trimmedLine.match(/^(\d+)\.\s+(.+)$/);
+      const unorderedMatch = trimmedLine.match(/^([-*+])\s+(.+)$/);
+
+      if (!orderedMatch && !unorderedMatch) {
+        // Not a list item, stop parsing this list
+        break;
+      }
+
+      // Set base indentation from first item
+      if (baseIndent === -1) {
+        baseIndent = indent;
+        // Determine list type from first item
+        currentListType = orderedMatch ? "ordered" : "unordered";
+      } else if (indent > baseIndent) {
+        // This item is more indented, it's a nested list, break to let parent handle it
+        break;
+      }
+
+      let content = "";
+
+      if (orderedMatch && orderedMatch[2]) {
+        content = orderedMatch[2];
+      } else if (unorderedMatch && unorderedMatch[2]) {
+        content = unorderedMatch[2];
+      } else {
+        i++;
+        continue;
+      }
+
+      // Create list item
+      const item: any = {
+        type: "list-item",
+        content: parseInline(content),
+      };
+
+      // Look ahead for nested lists
+      const nestedItems: any[] = [];
+      let j = i + 1;
+
+      while (j < lines.length) {
+        const nextLine = lines[j];
+        if (!nextLine) {
+          j++;
+          continue;
+        }
+
+        const nextTrimmed = nextLine.trim();
+        const nextIndent = nextLine.length - nextLine.trimStart().length;
+
+        // Empty line - continue checking
+        if (!nextTrimmed) {
+          j++;
+          continue;
+        }
+
+        // If this line has the same or less indentation as current item, stop looking for nested items
+        if (nextIndent <= indent) {
+          break;
+        }
+
+        // If this line is a list item with greater indentation, it's nested
+        if (
+          nextIndent > indent &&
+          (/^\d+\.\s+/.test(nextTrimmed) || /^[-*+]\s+/.test(nextTrimmed))
+        ) {
+          // Parse nested list starting from this line
+          const nestedResult = parseListLines(lines, j);
+          nestedItems.push(nestedResult.list);
+          j = nestedResult.nextIndex;
+        } else {
+          // Greater indentation but not a list item, skip
+          j++;
+        }
+      }
+
+      // Add nested lists to item if any
+      if (nestedItems.length > 0) {
+        item.nested = nestedItems;
+      }
+
+      items.push(item);
+      i = j; // Move to the next unprocessed line
+    }
+
+    return {
+      list: {
+        type: "list",
+        ordered: currentListType === "ordered",
+        items: items,
+      },
+      nextIndex: i,
+    };
   }
 
   return result;

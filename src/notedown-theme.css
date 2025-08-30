@@ -227,3 +227,93 @@
 .notedown-table tr:hover {
   background-color: #f1f1f1;
 }
+
+/* List Styles */
+.notedown-list {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.notedown-list-ordered {
+  list-style-type: decimal;
+}
+
+.notedown-list-unordered {
+  list-style-type: disc;
+}
+
+.notedown-list-item {
+  margin: 0.5em 0;
+  line-height: 1.6;
+  position: relative;
+}
+
+/* Nested list styling - lists inside list items */
+.notedown-list-item > .notedown-list {
+  margin: 0.5em 0 0 0;
+  padding-left: 2em;
+}
+
+/* Different bullet styles for nested unordered lists */
+.notedown-list-unordered .notedown-list-unordered {
+  list-style-type: circle;
+}
+
+.notedown-list-unordered .notedown-list-unordered .notedown-list-unordered {
+  list-style-type: square;
+}
+
+/* Ordered list numbering for nested lists */
+.notedown-list-ordered .notedown-list-ordered {
+  list-style-type: lower-alpha;
+}
+
+.notedown-list-ordered .notedown-list-ordered .notedown-list-ordered {
+  list-style-type: lower-roman;
+}
+
+/* Ensure proper display and spacing */
+.notedown-list-item {
+  display: list-item;
+}
+
+/* Add some breathing room between list levels */
+.notedown-list-item .notedown-list-item {
+  margin: 0.25em 0;
+}
+
+/* Make sure nested lists have proper indentation */
+.notedown-list-item > .notedown-list {
+  margin-top: 0.25em;
+  margin-bottom: 0;
+}
+
+/* First level lists should have standard margins */
+.notedown-container > .notedown-list,
+.notedown-paragraph > .notedown-list {
+  margin: 1em 0;
+}
+
+/* Ensure consistent spacing between list items */
+.notedown-list-item > *:last-child {
+  margin-bottom: 0;
+}
+
+.notedown-list-item > *:first-child {
+  margin-top: 0;
+}
+
+/* Collapse Styles */
+.notedown-collapse {
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+.notedown-collapse-title {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.notedown-collapse-content {
+  padding: 0.5em 1em;
+}

@@ -101,6 +101,17 @@ export interface NotedownTable {
   rows: NotedownTableRow[];
 }
 
+export interface NotedownListItem {
+  type: "list-item";
+  content: NotedownInlineContent[];
+}
+
+export interface NotedownList {
+  type: "list";
+  ordered: boolean;
+  items: NotedownListItem[];
+}
+
 export type NotedownContentItem =
   | NotedownParagraph
   | NotedownTitle
@@ -110,7 +121,8 @@ export type NotedownContentItem =
   | NotedownImage
   | NotedownTextContent
   | NotedownNewline
-  | NotedownTable;
+  | NotedownTable
+  | NotedownList;
 
 export interface NotedownDocument {
   meta?: NotedownMeta;

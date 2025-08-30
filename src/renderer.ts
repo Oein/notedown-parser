@@ -58,6 +58,8 @@ export class NotedownRenderer {
         return this.buildTextContent(item);
       case "table":
         return this.buildTable(item);
+      case "list":
+        return this.buildList(item);
       case "newline":
         return this.buildNewline();
       default:
@@ -195,6 +197,44 @@ export class NotedownRenderer {
     }
 
     return figure;
+  }
+
+  private buildList(item: any): HTMLElement {
+    const listElement = this.doc.createElement(item.ordered ? "ol" : "ul");
+    listElement.className = `notedown-list notedown-list-${
+      item.ordered ? "ordered" : "unordered"
+    }`;
+
+    if (item.items && Array.isArray(item.items)) {
+      for (const listItem of item.items) {
+        const li = this.doc.createElement("li");
+        li.className = "notedown-list-item";
+
+        // Add main content
+        if (listItem.content && Array.isArray(listItem.content)) {
+          for (const contentItem of listItem.content) {
+            const element = this.buildInlineContent(contentItem);
+            if (element) {
+              li.appendChild(element);
+            }
+          }
+        }
+
+        // Add nested lists if they exist
+        if (listItem.nested && Array.isArray(listItem.nested)) {
+          for (const nestedList of listItem.nested) {
+            const nestedElement = this.buildList(nestedList);
+            if (nestedElement) {
+              li.appendChild(nestedElement);
+            }
+          }
+        }
+
+        listElement.appendChild(li);
+      }
+    }
+
+    return listElement;
   }
 
   private buildTextContent(item: any): HTMLElement {
@@ -394,24 +434,8 @@ export class NotedownRenderer {
   }
 
   renderWithStyles(parsedData: NotedownDocument): HTMLElement {
-    // Inject default Notedown styles if not present
-    if (
-      this.doc &&
-      this.doc.head &&
-      !this.doc.getElementById("notedown-default-styles")
-    ) {
-      const style = this.doc.createElement("style");
-      style.id = "notedown-default-styles";
-      style.textContent = `
-        .notedown-collapse { margin: 1em 0; border-radius: 4px; }
-        .notedown-collapse-1 { }
-        .notedown-collapse-2 { }
-        .notedown-collapse-3 { }
-        .notedown-collapse-title { font-weight: bold; cursor: pointer; }
-        .notedown-collapse-content { padding: 0.5em 1em; }
-      `;
-      this.doc.head.appendChild(style);
-    }
+    // Note: Styles are now handled by notedown-theme.css
+    // No inline CSS injection needed
     const container = this.render(parsedData);
     this.applyCodeHighlighting(container);
     return container;
