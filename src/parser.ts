@@ -112,6 +112,8 @@ export function parseNotedown(ndText: string): NotedownDocument {
   // Helper to parse inline formatting with better nesting support
   function parseInline(text: string): any[] {
     const patterns = [
+      // Escaped asterisk (handle first to prevent italic parsing)
+      { re: /\\\*/, type: "escapedAsterisk" },
       // Bold
       { re: /\*\*(.+?)\*\*/, type: "bold" },
       // Italic
@@ -205,6 +207,9 @@ export function parseNotedown(ndText: string): NotedownDocument {
         } else if (earliestPattern.type === "escapedLink") {
           // \[text](url) -> [text](url) (render as plain text)
           result.push({ text: `[${earliestMatch[1]}](${earliestMatch[2]})` });
+        } else if (earliestPattern.type === "escapedAsterisk") {
+          // \* -> *
+          result.push({ text: "*" });
         } else if (earliestPattern.type === "text") {
           // For escaped patterns, add as plain text
           result.push({ text: earliestMatch[0] });
