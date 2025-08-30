@@ -386,7 +386,10 @@ export class NotedownRenderer {
       table.appendChild(tbody);
     }
 
-    return table;
+    const tableWrapper = this.doc.createElement("div");
+    tableWrapper.className = "notedown-table-wrapper";
+    tableWrapper.appendChild(table);
+    return tableWrapper;
   }
 
   renderWithStyles(parsedData: NotedownDocument): HTMLElement {
