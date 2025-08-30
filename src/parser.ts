@@ -309,43 +309,98 @@ export function parseNotedown(ndText: string): NotedownDocument {
   }
 
   function parseTextContent(text: string) {
-    let remainingText = text;
+    // Track positions of all collapse blocks first
+    const allCollapseMatches: Array<{
+      start: number;
+      end: number;
+      type: "header" | "simple";
+      match: RegExpMatchArray;
+    }> = [];
 
-    // Handle collapse blocks with headers (#>, ##>, etc.) - make title optional
-    const headerCollapseRegex = /^(#+)>\s*(.*?)(?:\n([\s\S]*?))?\n\\\1>$/gm;
-    remainingText = remainingText.replace(
-      headerCollapseRegex,
-      (_match, hashes, title, content) => {
-        const size = hashes.length;
-        const collapseBlock = {
-          type: "collapse",
-          size,
-          text: title.trim() ? replaceMeta(title.trim()) : [{ text: "Collapse" }],
-          content: content && content.trim() ? parseContentLines(content.trim().split("\n")) : [],
-        };
-        result.content.push(collapseBlock);
-        return "";
+    // Find header collapse blocks
+    const headerCollapseRegex = /(#+)>\s*(.*?)(?:\n([\s\S]*?))?\n\\\1>/g;
+    let match;
+    while ((match = headerCollapseRegex.exec(text)) !== null) {
+      allCollapseMatches.push({
+        start: match.index!,
+        end: match.index! + match[0].length,
+        type: "header",
+        match,
+      });
+    }
+
+    // Find simple collapse blocks
+    const simpleCollapseRegex = /\|>\s*(.*?)(?:\n([\s\S]*?))?\\\|>/g;
+    while ((match = simpleCollapseRegex.exec(text)) !== null) {
+      allCollapseMatches.push({
+        start: match.index!,
+        end: match.index! + match[0].length,
+        type: "simple",
+        match,
+      });
+    }
+
+    // Sort by position
+    allCollapseMatches.sort((a, b) => a.start - b.start);
+
+    // Process text in order, maintaining positions
+    let currentPos = 0;
+
+    if (allCollapseMatches.length === 0) {
+      // No collapses found, parse entire text as normal content
+      parseAsNormalContent(text);
+    } else {
+      // Process text with collapses in order
+      for (const collapseMatch of allCollapseMatches) {
+        // Process any text before this collapse
+        if (collapseMatch.start > currentPos) {
+          const beforeText = text.slice(currentPos, collapseMatch.start);
+          if (beforeText.trim()) {
+            parseAsNormalContent(beforeText.trim());
+          }
+        }
+
+        // Process the collapse block
+        if (collapseMatch.type === "header") {
+          const [, hashes, title, content] = collapseMatch.match;
+          const size = hashes?.length || 1;
+          const collapseBlock = {
+            type: "collapse",
+            size,
+            text: title?.trim()
+              ? replaceMeta(title.trim())
+              : [{ text: "Collapse" }],
+            content:
+              content && content.trim()
+                ? parseContentLines(content.trim().split("\n"))
+                : [],
+          };
+          result.content.push(collapseBlock);
+        } else {
+          const [, title, content] = collapseMatch.match;
+          const collapseBlock = {
+            type: "collapse",
+            text: title?.trim()
+              ? replaceMeta(title.trim())
+              : [{ text: "Collapse" }],
+            content:
+              content && content.trim()
+                ? parseContentLines(content.trim().split("\n"))
+                : [],
+          };
+          result.content.push(collapseBlock);
+        }
+
+        currentPos = collapseMatch.end;
       }
-    );
 
-    // Handle simple collapse blocks (|>) - make title optional, allow empty content
-    const simpleCollapseRegex = /^\|>\s*(.*?)(?:\n([\s\S]*?))?\\\|>$/gm;
-    remainingText = remainingText.replace(
-      simpleCollapseRegex,
-      (_match, title, content) => {
-        const collapseBlock = {
-          type: "collapse",
-          text: title.trim() ? replaceMeta(title.trim()) : [{ text: "Collapse" }],
-          content: content && content.trim() ? parseContentLines(content.trim().split("\n")) : [],
-        };
-        result.content.push(collapseBlock);
-        return "";
+      // Process any remaining text after the last collapse
+      if (currentPos < text.length) {
+        const remainingText = text.slice(currentPos);
+        if (remainingText.trim()) {
+          parseAsNormalContent(remainingText.trim());
+        }
       }
-    );
-
-    // Parse remaining content as paragraphs
-    if (remainingText.trim()) {
-      parseAsNormalContent(remainingText.trim());
     }
   }
 
