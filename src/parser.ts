@@ -447,8 +447,8 @@ export function parseNotedown(ndText: string): NotedownDocument {
       const paraContent: any[] = [];
 
       for (const line of lines) {
-        // Check for titles
-        const titleMatch = line.match(/^(#+)\s+(.+)$/);
+        // Check for titles (allow optional leading whitespace)
+        const titleMatch = line.match(/^\s*(#+)\s+(.+)$/);
         if (titleMatch && titleMatch[1] && titleMatch[2]) {
           const size = titleMatch[1].length;
           paraContent.push({
@@ -459,8 +459,8 @@ export function parseNotedown(ndText: string): NotedownDocument {
           continue;
         }
 
-        // Check for description
-        const descMatch = line.match(/^~#\s+(.+)$/);
+        // Check for description (allow optional leading whitespace)
+        const descMatch = line.match(/^\s*~#\s+(.+)$/);
         if (descMatch && descMatch[1]) {
           paraContent.push({
             type: "desc",

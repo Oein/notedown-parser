@@ -21,6 +21,7 @@
   float: none;
 }
 .notedown-title {
+  display: block;
   margin-top: 2em;
   margin-bottom: 1em;
   font-weight: 600;
@@ -363,4 +364,43 @@ details.notedown-collapse {
   left: auto !important;
   right: auto !important;
   bottom: auto !important;
+}
+
+/* Ensure headings work properly inside collapsed sections */
+.notedown-collapse .notedown-title {
+  display: block !important;
+  margin-top: 1.5em !important;
+  margin-bottom: 0.75em !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+}
+
+/* Specific heading sizes inside collapsed sections */
+.notedown-collapse .notedown-title-1 {
+  font-size: 2em !important;
+}
+
+.notedown-collapse .notedown-title-2 {
+  font-size: 1.75em !important;
+}
+
+.notedown-collapse .notedown-title-3 {
+  font-size: 1.5em !important;
+}
+
+.notedown-collapse .notedown-title-4 {
+  font-size: 1.25em !important;
+}
+
+.notedown-collapse .notedown-title-5 {
+  font-size: 1.1em !important;
+}
+
+.notedown-collapse .notedown-title-6 {
+  font-size: 1em !important;
+}
+
+/* Ensure first heading in collapsed section has proper margin */
+.notedown-collapse .notedown-title:first-child {
+  margin-top: 0 !important;
 }

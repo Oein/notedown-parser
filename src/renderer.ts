@@ -40,7 +40,7 @@ export class NotedownRenderer {
     return container;
   }
 
-  private buildContentItem(item: any): HTMLElement | null {
+  private buildContentItem(item: any): HTMLElement | DocumentFragment | null {
     switch (item.type) {
       case "paragraph":
         return this.buildParagraph(item);
@@ -68,20 +68,69 @@ export class NotedownRenderer {
     }
   }
 
-  private buildParagraph(item: any): HTMLElement {
-    const p = this.doc.createElement("p");
-    p.className = "notedown-paragraph";
+  private buildParagraph(item: any): HTMLElement | DocumentFragment {
+    if (!item.content || !Array.isArray(item.content)) {
+      const p = this.doc.createElement("p");
+      p.className = "notedown-paragraph";
+      return p;
+    }
 
-    if (item.content && Array.isArray(item.content)) {
+    // Check if paragraph contains titles - if so, we need to split it
+    const hasTitle = item.content.some(
+      (contentItem: any) => contentItem.type === "title"
+    );
+
+    if (!hasTitle) {
+      // Normal paragraph - no titles
+      const p = this.doc.createElement("p");
+      p.className = "notedown-paragraph";
+
       for (const contentItem of item.content) {
         const element = this.buildContentItem(contentItem);
         if (element) {
           p.appendChild(element);
         }
       }
+      return p;
     }
 
-    return p;
+    // Paragraph contains titles - split into multiple elements
+    const fragment = this.doc.createDocumentFragment();
+    let currentParagraph: HTMLElement | null = null;
+
+    for (const contentItem of item.content) {
+      if (contentItem.type === "title") {
+        // Close current paragraph if it exists and has content
+        if (currentParagraph && currentParagraph.childNodes.length > 0) {
+          fragment.appendChild(currentParagraph);
+          currentParagraph = null;
+        }
+
+        // Add the title as a separate element
+        const titleElement = this.buildContentItem(contentItem);
+        if (titleElement) {
+          fragment.appendChild(titleElement);
+        }
+      } else {
+        // Non-title content - add to current paragraph
+        if (!currentParagraph) {
+          currentParagraph = this.doc.createElement("p");
+          currentParagraph.className = "notedown-paragraph";
+        }
+
+        const element = this.buildContentItem(contentItem);
+        if (element) {
+          currentParagraph.appendChild(element);
+        }
+      }
+    }
+
+    // Add final paragraph if it has content
+    if (currentParagraph && currentParagraph.childNodes.length > 0) {
+      fragment.appendChild(currentParagraph);
+    }
+
+    return fragment;
   }
 
   private buildTitle(item: any): HTMLElement {
