@@ -1,0 +1,229 @@
+.notedown-container {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.notedown-title {
+  margin-top: 2em;
+  margin-bottom: 1em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.notedown-title-1 {
+  font-size: 2.5em;
+}
+.notedown-title-2 {
+  font-size: 2em;
+}
+.notedown-title-3 {
+  font-size: 1.75em;
+}
+.notedown-title-4 {
+  font-size: 1.5em;
+}
+.notedown-title-5 {
+  font-size: 1.25em;
+}
+.notedown-title-6 {
+  font-size: 1em;
+}
+.notedown-description {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 1em;
+}
+.notedown-paragraph {
+  margin-bottom: 1em;
+}
+.notedown-code-block {
+  background: #f6f8fa;
+  border: 1px solid #d1d9e0;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
+  font-size: 0.9em;
+  margin: 1em 0;
+  position: relative;
+}
+
+/* Default styling for code when highlight.js is not available */
+.notedown-code-block code.hljs {
+  display: block;
+  padding: 0;
+  background: transparent;
+}
+
+/* Language marker */
+.notedown-code-block::after {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 8px;
+  font-size: 0.7em;
+  color: #666;
+  background: #e6e9ed;
+  border-bottom-left-radius: 4px;
+  border-top-right-radius: 5px;
+  font-family: sans-serif;
+  opacity: 0.8;
+}
+
+/* Base highlight.js theme - light version */
+.hljs {
+  color: #24292e;
+}
+.hljs-doctag,
+.hljs-keyword,
+.hljs-meta .hljs-keyword,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable.language_ {
+  color: #d73a49;
+}
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-title.function_ {
+  color: #6f42c1;
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-literal,
+.hljs-meta,
+.hljs-number,
+.hljs-operator,
+.hljs-variable,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-id {
+  color: #005cc5;
+}
+.hljs-regexp,
+.hljs-string,
+.hljs-meta .hljs-string {
+  color: #032f62;
+}
+.hljs-built_in,
+.hljs-symbol {
+  color: #e36209;
+}
+.hljs-comment,
+.hljs-code,
+.hljs-formula {
+  color: #6a737d;
+}
+.hljs-name,
+.hljs-quote,
+.hljs-selector-tag,
+.hljs-selector-pseudo {
+  color: #22863a;
+}
+.notedown-inline-code {
+  background: #f6f8fa;
+  border: 1px solid #d1d9e0;
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
+  font-size: 0.9em;
+}
+.notedown-collapse {
+  border: 1px solid #d1d9e0;
+  border-radius: 6px;
+  margin: 1em 0;
+}
+.notedown-collapse-1 .notedown-collapse-title {
+  background: #e6f3ff;
+  font-size: 1.3em;
+  font-weight: 700;
+  border-left: 4px solid #0969da;
+}
+.notedown-collapse-2 .notedown-collapse-title {
+  background: #f0f6ff;
+  font-size: 1.15em;
+  font-weight: 650;
+  border-left: 4px solid #4a90e2;
+}
+.notedown-collapse-3 .notedown-collapse-title {
+  background: #f6f9ff;
+  font-size: 1.05em;
+  font-weight: 600;
+  border-left: 4px solid #8bb4e8;
+}
+.notedown-collapse-title {
+  background: #f6f8fa;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.notedown-collapse-content {
+  padding: 16px;
+}
+.notedown-image-figure {
+  margin: 1em 0;
+  text-align: center;
+}
+.notedown-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+.notedown-link {
+  color: #0969da;
+  text-decoration: none;
+}
+.notedown-link:hover {
+  text-decoration: underline;
+}
+.notedown-bold {
+  font-weight: 600;
+}
+.notedown-italic {
+  font-style: italic;
+}
+.notedown-underline {
+  text-decoration: underline;
+}
+.notedown-crossline {
+  text-decoration: line-through;
+}
+.notedown-color {
+  border-radius: 2px;
+}
+.notedown-meta-ref {
+  background: #fff3cd;
+  color: #856404;
+  padding: 2px 4px;
+  border-radius: 2px;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
+  font-size: 0.9em;
+}
+.notedown-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0;
+  font-size: 0.95em;
+}
+.notedown-table th,
+.notedown-table td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+}
+.notedown-table thead {
+  background-color: #f5f5f5;
+}
+.notedown-table th {
+  text-align: left;
+  font-weight: 600;
+}
+.notedown-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+.notedown-table tr:hover {
+  background-color: #f1f1f1;
+}

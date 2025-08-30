@@ -1,6 +1,6 @@
 {
   "name": "notedown-parser",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A TypeScript parser and renderer for Notedown markup language with syntax highlighting support",
   "type": "module",
   "main": "./dist/index.min.js",
@@ -50,7 +50,8 @@
       "require": "./dist/types.min.js",
       "browser": "./dist/types.min.js"
     },
-    "./highlight-theme.css": "./dist/highlight-theme.min.css"
+    "./highlight-theme.css": "./dist/highlight-theme.min.css",
+    "./notedown-theme.css": "./dist/notedown-theme.min.css"
   },
   "files": [
     "dist/**/*",
@@ -96,11 +97,11 @@
     "highlight.js": "^11.11.1"
   },
   "scripts": {
-    "build": "npx tsc && cp src/highlight-theme.css dist/",
-    "build:minify": "npm run build && npx webpack && npx cleancss -o dist/highlight-theme.min.css src/highlight-theme.css",
+    "build": "npx tsc && cp src/*.css dist/",
+    "build:minify": "npm run build && npx webpack && npx cleancss -o dist/highlight-theme.min.css src/highlight-theme.css && npx cleancss -o dist/notedown-theme.min.css src/notedown-theme.css",
     "build:publish": "npm run build:minify && npm run clean:original",
     "clean": "rm -rf dist",
-    "clean:original": "find dist -name '*.js' ! -name '*.min.js' -delete && rm -f dist/highlight-theme.css",
+    "clean:original": "find dist -name '*.js' ! -name '*.min.js' -delete && rm -f dist/highlight-theme.css && rm -f dist/notedown-theme.css",
     "prepublishOnly": "npm run clean && npm run build:publish",
     "test": "echo \"No tests specified\" && exit 0"
   }
