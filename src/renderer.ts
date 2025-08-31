@@ -271,6 +271,16 @@ export class NotedownRenderer {
           }
         }
 
+        // Add content blocks if they exist (indented paragraphs within list item)
+        if (listItem.content_blocks && Array.isArray(listItem.content_blocks)) {
+          for (const block of listItem.content_blocks) {
+            const element = this.buildContentItem(block);
+            if (element) {
+              li.appendChild(element);
+            }
+          }
+        }
+
         // Add nested lists if they exist
         if (listItem.nested && Array.isArray(listItem.nested)) {
           for (const nestedList of listItem.nested) {

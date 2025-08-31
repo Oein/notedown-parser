@@ -415,8 +415,29 @@ export function parseNotedown(
   }
 
   function parseContentLines(lines: string[]): any[] {
+    // Process indentation before joining lines
+    // This preserves relative indentation while handling collapse nesting
+
+    // Calculate common indentation level to remove
+    let minIndent = Infinity;
+    for (const line of lines) {
+      if (line.trim()) {
+        // Skip empty lines
+        const indent = line.length - line.trimStart().length;
+        minIndent = Math.min(minIndent, indent);
+      }
+    }
+
+    // Remove common indentation prefix from all lines
+    const processedLines = lines.map((line) => {
+      if (line.trim()) {
+        return line.slice(minIndent); // Remove the common indentation
+      }
+      return line; // Keep empty lines as is
+    });
+
     // Join lines back and parse as a full Notedown document to handle nested collapses
-    const contentText = lines.join("\n");
+    const contentText = processedLines.join("\n");
     if (!contentText.trim()) {
       return [];
     }
@@ -883,8 +904,51 @@ export function parseNotedown(
           const nestedResult = parseListLines(lines, j);
           nestedItems.push(nestedResult.list);
           j = nestedResult.nextIndex;
+        } else if (nextIndent > indent) {
+          // Greater indentation but not a list item - this is indented content for the current item
+
+          // Collect all lines with the same or greater indentation as additional content
+          const contentLines = [];
+          let k = j;
+
+          while (k < lines.length) {
+            const contentLine = lines[k];
+            if (!contentLine) {
+              // Keep empty lines
+              contentLines.push("");
+              k++;
+              continue;
+            }
+
+            const contentIndent =
+              contentLine.length - contentLine.trimStart().length;
+
+            // If indentation drops below the content indentation level, we're done with this content block
+            if (contentIndent < nextIndent) {
+              break;
+            }
+
+            // Add this line to the content, preserving its indentation relative to nextIndent
+            contentLines.push(contentLine.slice(nextIndent));
+            k++;
+          }
+
+          // Process the collected content lines
+          if (contentLines.length > 0) {
+            // Parse the content as a paragraph or other block element
+            const contentText = contentLines.join("\n");
+            const contentBlocks = parseContentLines(contentLines);
+
+            // Add content to the current list item
+            if (!item.content_blocks) {
+              item.content_blocks = [];
+            }
+            item.content_blocks.push(...contentBlocks);
+          }
+
+          j = k; // Move to the next line after the content block
         } else {
-          // Greater indentation but not a list item, skip
+          // Not indented or a list item, skip
           j++;
         }
       }
