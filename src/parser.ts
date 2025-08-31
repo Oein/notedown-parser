@@ -423,6 +423,191 @@ export function parseNotedown(ndText: string): NotedownDocument {
     return subDocument.content || [];
   }
 
+  // Helper function to parse mixed content (headings followed by lists, etc.)
+  function parseMixedContent(text: string): any[] {
+    const lines = text
+      .split(/\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+    if (lines.length === 0) return [];
+
+    const elements: any[] = [];
+    let currentParagraphLines: string[] = [];
+    let i = 0;
+
+    while (i < lines.length) {
+      const line = lines[i];
+      if (!line) {
+        i++;
+        continue;
+      }
+
+      // Check if this line is a heading
+      const titleMatch = line.match(/^\s*(#+)\s+(.+)$/);
+      if (titleMatch && titleMatch[1] && titleMatch[2]) {
+        // Flush any accumulated paragraph lines
+        if (currentParagraphLines.length > 0) {
+          const paraText = currentParagraphLines.join("\n");
+          if (isList(paraText)) {
+            elements.push(parseList(paraText));
+          } else {
+            elements.push(parseSingleParagraph(paraText));
+          }
+          currentParagraphLines = [];
+        }
+
+        // Add the heading
+        const size = titleMatch[1].length;
+        elements.push({
+          type: "heading",
+          size,
+          text: replaceMeta(titleMatch[2].trim()),
+        });
+        i++;
+        continue;
+      }
+
+      // Check if this line is a description
+      const descMatch = line.match(/^\s*~#\s+(.+)$/);
+      if (descMatch && descMatch[1]) {
+        // Flush any accumulated paragraph lines
+        if (currentParagraphLines.length > 0) {
+          const paraText = currentParagraphLines.join("\n");
+          if (isList(paraText)) {
+            elements.push(parseList(paraText));
+          } else {
+            elements.push(parseSingleParagraph(paraText));
+          }
+          currentParagraphLines = [];
+        }
+
+        // Add the description
+        elements.push({
+          type: "desc",
+          text: replaceMeta(descMatch[1].trim()),
+        });
+        i++;
+        continue;
+      }
+
+      // Check if this line starts a list
+      const isListLine = /^\d+\.\s+/.test(line) || /^[-*+]\s+/.test(line);
+      if (isListLine && currentParagraphLines.length === 0) {
+        // Start collecting list lines
+        const listLines = [line];
+        i++;
+
+        // Collect all consecutive list lines (and nested items)
+        while (i < lines.length) {
+          const nextLine = lines[i];
+          if (!nextLine) {
+            i++;
+            continue;
+          }
+
+          const nextTrimmed = nextLine.trim();
+
+          if (!nextTrimmed) {
+            i++;
+            continue;
+          }
+
+          // Check if it's a list item or indented continuation
+          const isNextListLine =
+            /^\d+\.\s+/.test(nextTrimmed) || /^[-*+]\s+/.test(nextTrimmed);
+          const isIndentedLine = nextLine.length > nextLine.trimStart().length;
+
+          if (
+            isNextListLine ||
+            (isIndentedLine &&
+              (/^\d+\.\s+/.test(nextTrimmed) || /^[-*+]\s+/.test(nextTrimmed)))
+          ) {
+            listLines.push(nextLine);
+            i++;
+          } else {
+            break;
+          }
+        }
+
+        // Parse the collected list
+        const listText = listLines.join("\n");
+        elements.push(parseList(listText));
+        continue;
+      }
+
+      // Regular line - add to current paragraph
+      currentParagraphLines.push(line);
+      i++;
+    }
+
+    // Flush any remaining paragraph lines
+    if (currentParagraphLines.length > 0) {
+      const paraText = currentParagraphLines.join("\n");
+      if (isList(paraText)) {
+        elements.push(parseList(paraText));
+      } else {
+        elements.push(parseSingleParagraph(paraText));
+      }
+    }
+
+    return elements;
+  }
+
+  // Helper function to parse a single paragraph (without mixed content detection)
+  function parseSingleParagraph(text: string): any {
+    const lines = text.split(/\n/);
+    const paraContent: any[] = [];
+
+    for (const line of lines) {
+      // Check for titles (allow optional leading whitespace)
+      const titleMatch = line.match(/^\s*(#+)\s+(.+)$/);
+      if (titleMatch && titleMatch[1] && titleMatch[2]) {
+        const size = titleMatch[1].length;
+        paraContent.push({
+          type: "title",
+          size,
+          text: replaceMeta(titleMatch[2].trim()),
+        });
+        continue;
+      }
+
+      // Check for description (allow optional leading whitespace)
+      const descMatch = line.match(/^\s*~#\s+(.+)$/);
+      if (descMatch && descMatch[1]) {
+        paraContent.push({
+          type: "desc",
+          text: replaceMeta(descMatch[1].trim()),
+        });
+        continue;
+      }
+
+      if (line.trim() === "" || line.trim() === "\\n") {
+        paraContent.push({ type: "newline" });
+      } else {
+        const cleanText = line.replace(/\\n/g, "").trim();
+        if (cleanText.length > 0) {
+          const inline = parseInline(cleanText);
+          // If image, push as block
+          if (inline.length === 1 && inline[0].type === "image") {
+            paraContent.push(inline[0]);
+          } else {
+            paraContent.push({ type: "text", content: inline });
+          }
+        }
+      }
+    }
+
+    // Remove trailing newlines in paragraph
+    while (
+      paraContent.length &&
+      paraContent[paraContent.length - 1].type === "newline"
+    ) {
+      paraContent.pop();
+    }
+
+    return { type: "paragraph", content: paraContent };
+  }
+
   function parseAsNormalContent(text: string) {
     // Split by \np or two or more newlines for paragraphs
     const paraSplitRegex = /(?:\\np|\n{2,})/;
@@ -441,6 +626,14 @@ export function parseNotedown(ndText: string): NotedownDocument {
       // Check if this paragraph is a list
       if (isList(rawPara)) {
         result.content.push(parseList(rawPara));
+        continue;
+      }
+
+      // Check if this paragraph contains mixed content (headings + lists)
+      // and should be split into separate elements
+      const mixedElements = parseMixedContent(rawPara);
+      if (mixedElements.length > 1) {
+        result.content.push(...mixedElements);
         continue;
       }
 
