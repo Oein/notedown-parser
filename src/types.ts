@@ -58,6 +58,12 @@ export interface NotedownTitle {
   text: NotedownInlineContent[];
 }
 
+export interface NotedownHeading {
+  type: "heading";
+  size: number;
+  text: NotedownInlineContent[];
+}
+
 export interface NotedownDescription {
   type: "desc";
   text: NotedownInlineContent[];
@@ -115,6 +121,7 @@ export interface NotedownList {
 export type NotedownContentItem =
   | NotedownParagraph
   | NotedownTitle
+  | NotedownHeading
   | NotedownDescription
   | NotedownCodeBlock
   | NotedownCollapse

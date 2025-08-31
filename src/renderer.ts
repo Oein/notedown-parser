@@ -46,6 +46,8 @@ export class NotedownRenderer {
         return this.buildParagraph(item);
       case "title":
         return this.buildTitle(item);
+      case "heading":
+        return this.buildTitle(item);
       case "desc":
         return this.buildDescription(item);
       case "code":
