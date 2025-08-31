@@ -1,7 +1,10 @@
 import type { NotedownDocument } from "./types";
 
 // Complete Notedown parser
-export function parseNotedown(ndText: string): NotedownDocument {
+export function parseNotedown(
+  ndText: string,
+  isCollapseContent: boolean = false
+): NotedownDocument {
   const meta: any = {};
 
   // First pass: extract meta variables from beginning of document only
@@ -114,10 +117,10 @@ export function parseNotedown(ndText: string): NotedownDocument {
     const patterns = [
       // Escaped asterisk (handle first to prevent italic parsing)
       { re: /\\\*/, type: "escapedAsterisk" },
-      // Bold
-      { re: /\*\*(.+?)\*\*/, type: "bold" },
-      // Italic
-      { re: /\*(.+?)\*/, type: "italic" },
+      // Bold (support escaped asterisks inside)
+      { re: /\*\*((?:[^*\\]|\\.|\*(?!\*))*?)\*\*/, type: "bold" },
+      // Italic (support escaped asterisks inside)
+      { re: /\*((?:[^*\\]|\\.)*?)\*/, type: "italic" },
       // Underline
       { re: /__(.+?)__/, type: "underline" },
       // Crossline
@@ -419,7 +422,7 @@ export function parseNotedown(ndText: string): NotedownDocument {
     }
 
     // Recursively parse the content as a new Notedown document
-    const subDocument = parseNotedown(contentText);
+    const subDocument = parseNotedown(contentText, true);
     return subDocument.content || [];
   }
 
@@ -610,7 +613,10 @@ export function parseNotedown(ndText: string): NotedownDocument {
 
   function parseAsNormalContent(text: string) {
     // Split by \np or two or more newlines for paragraphs
-    const paraSplitRegex = /(?:\\np|\n{2,})/;
+    // In collapse content, also split on single empty lines for more consistent formatting
+    const paraSplitRegex = isCollapseContent
+      ? /(?:\\np|\n\s*\n)/
+      : /(?:\\np|\n{2,})/;
     const rawParagraphs = text
       .split(paraSplitRegex)
       .map((p) => p.trim())
