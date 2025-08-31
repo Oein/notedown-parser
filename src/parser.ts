@@ -322,9 +322,10 @@ export function parseNotedown(ndText: string): NotedownDocument {
       match: RegExpMatchArray;
     }> = [];
 
-    // Find header collapse blocks
-    const headerCollapseRegex = /(#+)>\s*(.*?)(?:\n([\s\S]*?))?\n\\\1>/g;
-    let match;
+    // Find header collapse blocks (allow optional leading whitespace like headings)
+    const headerCollapseRegex =
+      /^(\s*)(#+)>\s*(.*?)(?:\n([\s\S]*?))?\n\s*\\\2>/gm;
+    let match: RegExpExecArray | null;
     while ((match = headerCollapseRegex.exec(text)) !== null) {
       allCollapseMatches.push({
         start: match.index!,
@@ -334,8 +335,9 @@ export function parseNotedown(ndText: string): NotedownDocument {
       });
     }
 
-    // Find simple collapse blocks
-    const simpleCollapseRegex = /\|>\s*(.*?)(?:\n([\s\S]*?))?\\\|>/g;
+    // Find simple collapse blocks (allow optional leading whitespace)
+    const simpleCollapseRegex =
+      /^(\s*)\|>\s*(.*?)(?:\n([\s\S]*?))?\n\s*\\\|>/gm;
     while ((match = simpleCollapseRegex.exec(text)) !== null) {
       allCollapseMatches.push({
         start: match.index!,
@@ -367,7 +369,7 @@ export function parseNotedown(ndText: string): NotedownDocument {
 
         // Process the collapse block
         if (collapseMatch.type === "header") {
-          const [, hashes, title, content] = collapseMatch.match;
+          const [, , hashes, title, content] = collapseMatch.match;
           const size = hashes?.length || 1;
           const collapseBlock = {
             type: "collapse",
@@ -382,7 +384,7 @@ export function parseNotedown(ndText: string): NotedownDocument {
           };
           result.content.push(collapseBlock);
         } else {
-          const [, title, content] = collapseMatch.match;
+          const [, , title, content] = collapseMatch.match;
           const collapseBlock = {
             type: "collapse",
             text: title?.trim()
