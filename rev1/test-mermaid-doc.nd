@@ -1,0 +1,12 @@
+
+# Test Mermaid in List
+
+- List item with Mermaid diagram
+  ```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+  ```
+- Another list item

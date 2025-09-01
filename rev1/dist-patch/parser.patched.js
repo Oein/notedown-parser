@@ -1,0 +1,913 @@
+// Complete Notedown parser
+export function parseNotedown(ndText, isCollapseContent = false) {
+    const meta = {};
+    // First pass: extract meta variables from beginning of document only
+    const lines = ndText.split(/\r?\n/);
+    const processedLines = [];
+    let metaSection = true;
+    for (const line of lines) {
+        const metaMatch = line.match(/^\\meta\s+(\w+)=(.+)$/);
+        if (metaMatch && metaMatch[1] && metaMatch[2] && metaSection) {
+            meta[metaMatch[1]] = metaMatch[2];
+        }
+        else {
+            processedLines.push(line);
+            // Stop processing meta after first non-empty, non-meta line
+            if (line.trim() !== "" && !line.match(/^\\meta\s+/)) {
+                metaSection = false;
+            }
+        }
+    }
+    const result = {};
+    if (Object.keys(meta).length > 0) {
+        result.meta = meta;
+    }
+    result.content = [];
+    // Helper to replace meta references (handle escaping)
+    function replaceMeta(text) {
+        const parts = [];
+        // First, we'll use a two-pass approach
+        // First pass: find all meta references (both escaped and non-escaped)
+        const allMatches = [];
+        // Find escaped meta references
+        const escapedRegex = /\\@\{(\w+)\}/g;
+        let escapedMatch;
+        while ((escapedMatch = escapedRegex.exec(text)) !== null) {
+            allMatches.push({
+                start: escapedMatch.index,
+                end: escapedMatch.index + escapedMatch[0].length,
+                content: escapedMatch[1] || "",
+                escaped: true,
+            });
+        }
+        // Find regular meta references (that aren't already escaped)
+        const metaRegex = /@\{(\w+)\}/g;
+        let metaMatch;
+        while ((metaMatch = metaRegex.exec(text)) !== null) {
+            // Check if this match overlaps with any escaped match
+            const isOverlap = allMatches.some((m) => (metaMatch !== null &&
+                metaMatch.index >= m.start &&
+                metaMatch.index < m.end) ||
+                (metaMatch !== null &&
+                    metaMatch.index + metaMatch[0].length > m.start &&
+                    metaMatch.index + metaMatch[0].length <= m.end));
+            if (!isOverlap) {
+                allMatches.push({
+                    start: metaMatch.index,
+                    end: metaMatch.index + metaMatch[0].length,
+                    content: metaMatch[1] || "",
+                    escaped: false,
+                });
+            }
+        }
+        // Sort matches by start position
+        allMatches.sort((a, b) => a.start - b.start);
+        // Second pass: build the parts array based on the matches
+        let lastIndex = 0;
+        for (const match of allMatches) {
+            // Add text before this match
+            if (match.start > lastIndex) {
+                parts.push({ text: text.slice(lastIndex, match.start) });
+            }
+            // Add the match itself
+            if (match.escaped) {
+                // For escaped matches, add as regular text without the backslash
+                parts.push({ text: `@{${match.content}}` });
+            }
+            else {
+                // For regular meta references, add as meta node
+                parts.push({ meta: match.content });
+            }
+            lastIndex = match.end;
+        }
+        // Add any remaining text
+        if (lastIndex < text.length) {
+            parts.push({ text: text.slice(lastIndex) });
+        }
+        return parts.length > 0 ? parts : [{ text }];
+    }
+    // Helper to parse inline formatting with better nesting support
+    function parseInline(text) {
+        const patterns = [
+            // Escaped asterisk (handle first to prevent italic parsing)
+            { re: /\\\*/, type: "escapedAsterisk" },
+            // Bold (support escaped asterisks inside)
+            { re: /\*\*((?:[^*\\]|\\.|\*(?!\*))*?)\*\*/, type: "bold" },
+            // Italic (support escaped asterisks inside)
+            { re: /\*((?:[^*\\]|\\.)*?)\*/, type: "italic" },
+            // Underline
+            { re: /__(.+?)__/, type: "underline" },
+            // Crossline
+            { re: /~~(.+?)~~/, type: "crossline" },
+            // Code (support escaped backticks)
+            { re: /`((?:[^`\\]|\\.)*?)`/, type: "code" },
+            // LaTeX formula
+            { re: /\$((?:[^$\\]|\\.)*?)\$/, type: "latex" },
+            // Escaped link (handle before regular link)
+            { re: /\\\[([^\]]+)\]\(([^)]+)\)/, type: "escapedLink" },
+            // Escaped color patterns (handle these first to avoid parsing them as colors)
+            { re: /\\\|([^|]+)\\\|/, type: "escapedPipe" },
+            { re: /\|\\([^|]+)\|/, type: "escapedContent" },
+            // Color foreground/background (order matters - longest first)
+            {
+                re: /\|f#([\w]+),b#([\w]+),([^|]+)\|/,
+                type: "color",
+                fg: true,
+                bg: true,
+            },
+            { re: /\|b#([\w]+),([^|]+)\|/, type: "color", bg: true },
+            { re: /\|f#([\w]+),([^|]+)\|/, type: "color", fg: true },
+            // Color with no color (plain) - this should come last
+            { re: /\|([^|]+)\|/, type: "color", noColor: true },
+            // Link
+            { re: /\[([^\]]+)\]\(([^)]+)\)/, type: "link" },
+        ];
+        // Image (block-level)
+        if (/^!\[([^\]]*)\]\(([^)]+)\)$/.test(text.trim())) {
+            const m = text.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+            if (m) {
+                return [{ type: "image", link: m[2], alt: m[1] }];
+            }
+        }
+        let rest = text;
+        const result = [];
+        while (rest.length > 0) {
+            let earliestMatch = null;
+            let earliestPattern = null;
+            let earliestIndex = rest.length;
+            // Find the earliest match among all patterns
+            for (const pat of patterns) {
+                const m = rest.match(pat.re);
+                if (m && m.index !== undefined && m.index < earliestIndex) {
+                    earliestMatch = m;
+                    earliestPattern = pat;
+                    earliestIndex = m.index;
+                }
+            }
+            if (earliestMatch &&
+                earliestPattern &&
+                earliestMatch.index !== undefined) {
+                // Add text before match
+                if (earliestMatch.index > 0) {
+                    const beforeText = rest.slice(0, earliestMatch.index);
+                    result.push(...replaceMeta(beforeText));
+                }
+                if (earliestPattern.type === "bold" ||
+                    earliestPattern.type === "italic" ||
+                    earliestPattern.type === "underline" ||
+                    earliestPattern.type === "crossline") {
+                    // Parse content recursively to handle nested formatting and links
+                    result.push({
+                        format: earliestPattern.type,
+                        content: parseInline(earliestMatch[1] || ""),
+                    });
+                }
+                else if (earliestPattern.type === "code") {
+                    const codeText = (earliestMatch[1] || "").replace(/\\`/g, "`");
+                    result.push({ format: "code", content: [{ text: codeText }] });
+                }
+                else if (earliestPattern.type === "latex") {
+                    const formula = (earliestMatch[1] || "").replace(/\\\$/g, "$");
+                    result.push({
+                        format: "latex",
+                        formula,
+                        content: [{ text: formula }],
+                    });
+                }
+                else if (earliestPattern.type === "escapedLink") {
+                    // \[text](url) -> [text](url) (render as plain text)
+                    result.push({ text: `[${earliestMatch[1]}](${earliestMatch[2]})` });
+                }
+                else if (earliestPattern.type === "escapedAsterisk") {
+                    // \* -> *
+                    result.push({ text: "*" });
+                }
+                else if (earliestPattern.type === "text") {
+                    // For escaped patterns, add as plain text
+                    result.push({ text: earliestMatch[0] });
+                }
+                else if (earliestPattern.type === "escapedPipe") {
+                    // \|text\| -> |text|
+                    result.push({ text: `|${earliestMatch[1]}|` });
+                }
+                else if (earliestPattern.type === "escapedContent") {
+                    // |\text| -> |text| (remove the backslash)
+                    result.push({ text: `|${earliestMatch[1]}|` });
+                }
+                else if (earliestPattern.type === "color" &&
+                    earliestPattern.fg &&
+                    earliestPattern.bg) {
+                    result.push({
+                        format: "color",
+                        foreground: earliestMatch[1],
+                        background: earliestMatch[2],
+                        content: parseInline(earliestMatch[3] || ""),
+                    });
+                }
+                else if (earliestPattern.type === "color" && earliestPattern.bg) {
+                    result.push({
+                        format: "color",
+                        background: earliestMatch[1],
+                        content: parseInline(earliestMatch[2] || ""),
+                    });
+                }
+                else if (earliestPattern.type === "color" && earliestPattern.fg) {
+                    result.push({
+                        format: "color",
+                        foreground: earliestMatch[1],
+                        content: parseInline(earliestMatch[2] || ""),
+                    });
+                }
+                else if (earliestPattern.type === "color" &&
+                    earliestPattern.noColor) {
+                    result.push({
+                        format: "color",
+                        content: parseInline(earliestMatch[1] || ""),
+                    });
+                }
+                else if (earliestPattern.type === "link") {
+                    result.push({ link: earliestMatch[2], text: earliestMatch[1] });
+                }
+                rest = rest.slice(earliestMatch.index + earliestMatch[0].length);
+            }
+            else {
+                result.push(...replaceMeta(rest));
+                break;
+            }
+        }
+        return result;
+    }
+    // Parse content
+    const contentText = processedLines.join("\n");
+    // Handle code blocks first - allow for indentation before code blocks
+    const codeBlockRegex = /^(\s*)```(\w+)?\n([\s\S]*?)\n\s*```$/gm;
+    const blocks = [];
+    let lastIndex = 0;
+    let match;
+    while ((match = codeBlockRegex.exec(contentText)) !== null) {
+        // Add content before code block
+        if (match.index > lastIndex) {
+            const beforeContent = contentText.slice(lastIndex, match.index).trim();
+            if (beforeContent) {
+                blocks.push({ type: "text", content: beforeContent });
+            }
+        }
+        // Calculate indentation level for later processing
+        const indentLevel = match[1] ? match[1].length : 0;
+        // Add code block with proper property order
+        const codeBlock = {
+            type: "code",
+            indentLevel // Store the indent level for later
+        };
+        if (match[2]) { // match[1] is the indentation, match[2] is the language
+            codeBlock.lang = match[2];
+        }
+        // Only unescape \``` (backslash followed by exactly 3 backticks) but keep other escapes
+        codeBlock.content = (match[3] || "").replace(/\\```/g, "```");
+        blocks.push(codeBlock);
+        lastIndex = match.index + match[0].length;
+    }
+    // Add remaining content
+    if (lastIndex < contentText.length) {
+        const remainingContent = contentText.slice(lastIndex).trim();
+        if (remainingContent) {
+            blocks.push({ type: "text", content: remainingContent });
+        }
+    }
+    // If no code blocks found, treat entire content as text
+    if (blocks.length === 0) {
+        blocks.push({ type: "text", content: contentText });
+    }
+    // Process each block
+    for (const block of blocks) {
+        if (block.type === "code") {
+            result.content.push(block);
+        }
+        else {
+            parseTextContent(block.content);
+        }
+    }
+    function parseTextContent(text) {
+        // Track positions of all collapse blocks first
+        const allCollapseMatches = [];
+        // Find header collapse blocks (allow optional leading whitespace like headings)
+        const headerCollapseRegex = /^(\s*)(#+)>\s*(.*?)(?:\n([\s\S]*?))?\n\s*\\\2>/gm;
+        let match;
+        while ((match = headerCollapseRegex.exec(text)) !== null) {
+            allCollapseMatches.push({
+                start: match.index,
+                end: match.index + match[0].length,
+                type: "header",
+                match,
+            });
+        }
+        // Find simple collapse blocks (allow optional leading whitespace)
+        const simpleCollapseRegex = /^(\s*)\|>\s*(.*?)(?:\n([\s\S]*?))?\n\s*\\\|>/gm;
+        while ((match = simpleCollapseRegex.exec(text)) !== null) {
+            allCollapseMatches.push({
+                start: match.index,
+                end: match.index + match[0].length,
+                type: "simple",
+                match,
+            });
+        }
+        // Sort by position
+        allCollapseMatches.sort((a, b) => a.start - b.start);
+        // Process text in order, maintaining positions
+        let currentPos = 0;
+        if (allCollapseMatches.length === 0) {
+            // No collapses found, parse entire text as normal content
+            parseAsNormalContent(text);
+        }
+        else {
+            // Process text with collapses in order
+            for (const collapseMatch of allCollapseMatches) {
+                // Process any text before this collapse
+                if (collapseMatch.start > currentPos) {
+                    const beforeText = text.slice(currentPos, collapseMatch.start);
+                    if (beforeText.trim()) {
+                        parseAsNormalContent(beforeText.trim());
+                    }
+                }
+                // Process the collapse block
+                if (collapseMatch.type === "header") {
+                    const [, , hashes, title, content] = collapseMatch.match;
+                    const size = hashes?.length || 1;
+                    const collapseBlock = {
+                        type: "collapse",
+                        size,
+                        text: title?.trim()
+                            ? replaceMeta(title.trim())
+                            : [{ text: "Collapse" }],
+                        content: content && content.trim()
+                            ? parseContentLines(content.trim().split("\n"))
+                            : [],
+                    };
+                    result.content.push(collapseBlock);
+                }
+                else {
+                    const [, , title, content] = collapseMatch.match;
+                    const collapseBlock = {
+                        type: "collapse",
+                        text: title?.trim()
+                            ? replaceMeta(title.trim())
+                            : [{ text: "Collapse" }],
+                        content: content && content.trim()
+                            ? parseContentLines(content.trim().split("\n"))
+                            : [],
+                    };
+                    result.content.push(collapseBlock);
+                }
+                currentPos = collapseMatch.end;
+            }
+            // Process any remaining text after the last collapse
+            if (currentPos < text.length) {
+                const remainingText = text.slice(currentPos);
+                if (remainingText.trim()) {
+                    parseAsNormalContent(remainingText.trim());
+                }
+            }
+        }
+    }
+    function parseContentLines(lines) {
+        // Process indentation before joining lines
+        // This preserves relative indentation while handling collapse nesting
+        // Calculate common indentation level to remove
+        let minIndent = Infinity;
+        for (const line of lines) {
+            if (line.trim()) {
+                // Skip empty lines
+                const indent = line.length - line.trimStart().length;
+                minIndent = Math.min(minIndent, indent);
+            }
+        }
+        // Remove common indentation prefix from all lines
+        const processedLines = lines.map((line) => {
+            if (line.trim()) {
+                return line.slice(minIndent); // Remove the common indentation
+            }
+            return line; // Keep empty lines as is
+        });
+        // Check for code blocks with indentation - special handling for mermaid and code
+        // We need to check for code blocks before joining lines to preserve indentation
+        let codeBlockStart = -1;
+        let codeBlockLang = "";
+        let inCodeBlock = false;
+        // First pass to check if this is a single code block
+        for (let i = 0; i < processedLines.length; i++) {
+            const currentLine = processedLines[i] || "";
+            const line = currentLine.trim();
+            if (!inCodeBlock && line.startsWith("```")) {
+                inCodeBlock = true;
+                codeBlockStart = i;
+                codeBlockLang = line.slice(3).trim(); // Extract language
+            }
+            else if (inCodeBlock && line === "```") {
+                // We found a complete code block - if it's the only content, return it directly
+                if (codeBlockStart === 0 && i === processedLines.length - 1) {
+                    // Extract the code content
+                    const codeContent = processedLines
+                        .slice(codeBlockStart + 1, i)
+                        .join("\n");
+                    return [{
+                            type: "code",
+                            lang: codeBlockLang || undefined,
+                            content: codeContent
+                        }];
+                }
+                inCodeBlock = false;
+            }
+        }
+        // Join lines back and parse as a full Notedown document to handle nested collapses
+        const contentText = processedLines.join("\n");
+        if (!contentText.trim()) {
+            return [];
+        }
+        // Recursively parse the content as a new Notedown document
+        const subDocument = parseNotedown(contentText, true);
+        return subDocument.content || [];
+    }
+    // Helper function to parse mixed content (headings followed by lists, etc.)
+    function parseMixedContent(text) {
+        const lines = text
+            .split(/\n/)
+            .map((line) => line.trim())
+            .filter(Boolean);
+        if (lines.length === 0)
+            return [];
+        const elements = [];
+        let currentParagraphLines = [];
+        let i = 0;
+        while (i < lines.length) {
+            const line = lines[i];
+            if (!line) {
+                i++;
+                continue;
+            }
+            // Check if this line is a heading
+            const titleMatch = line.match(/^\s*(#+)\s+(.+)$/);
+            if (titleMatch && titleMatch[1] && titleMatch[2]) {
+                // Flush any accumulated paragraph lines
+                if (currentParagraphLines.length > 0) {
+                    const paraText = currentParagraphLines.join("\n");
+                    if (isList(paraText)) {
+                        elements.push(parseList(paraText));
+                    }
+                    else {
+                        elements.push(parseSingleParagraph(paraText));
+                    }
+                    currentParagraphLines = [];
+                }
+                // Add the heading
+                const size = titleMatch[1].length;
+                elements.push({
+                    type: "heading",
+                    size,
+                    text: replaceMeta(titleMatch[2].trim()),
+                });
+                i++;
+                continue;
+            }
+            // Check if this line is a description
+            const descMatch = line.match(/^\s*~#\s+(.+)$/);
+            if (descMatch && descMatch[1]) {
+                // Flush any accumulated paragraph lines
+                if (currentParagraphLines.length > 0) {
+                    const paraText = currentParagraphLines.join("\n");
+                    if (isList(paraText)) {
+                        elements.push(parseList(paraText));
+                    }
+                    else {
+                        elements.push(parseSingleParagraph(paraText));
+                    }
+                    currentParagraphLines = [];
+                }
+                // Add the description
+                elements.push({
+                    type: "desc",
+                    text: replaceMeta(descMatch[1].trim()),
+                });
+                i++;
+                continue;
+            }
+            // Check if this line starts a list
+            const isListLine = /^\d+\.\s+/.test(line) || /^[-*+]\s+/.test(line);
+            if (isListLine && currentParagraphLines.length === 0) {
+                // Start collecting list lines
+                const listLines = [line];
+                i++;
+                // Collect all consecutive list lines (and nested items)
+                while (i < lines.length) {
+                    const nextLine = lines[i];
+                    if (!nextLine) {
+                        i++;
+                        continue;
+                    }
+                    const nextTrimmed = nextLine.trim();
+                    if (!nextTrimmed) {
+                        i++;
+                        continue;
+                    }
+                    // Check if it's a list item or indented continuation
+                    const isNextListLine = /^\d+\.\s+/.test(nextTrimmed) || /^[-*+]\s+/.test(nextTrimmed);
+                    const isIndentedLine = nextLine.length > nextLine.trimStart().length;
+                    if (isNextListLine ||
+                        (isIndentedLine &&
+                            (/^\d+\.\s+/.test(nextTrimmed) || /^[-*+]\s+/.test(nextTrimmed)))) {
+                        listLines.push(nextLine);
+                        i++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                // Parse the collected list
+                const listText = listLines.join("\n");
+                elements.push(parseList(listText));
+                continue;
+            }
+            // Regular line - add to current paragraph
+            currentParagraphLines.push(line);
+            i++;
+        }
+        // Flush any remaining paragraph lines
+        if (currentParagraphLines.length > 0) {
+            const paraText = currentParagraphLines.join("\n");
+            if (isList(paraText)) {
+                elements.push(parseList(paraText));
+            }
+            else {
+                elements.push(parseSingleParagraph(paraText));
+            }
+        }
+        return elements;
+    }
+    // Helper function to parse a single paragraph (without mixed content detection)
+    function parseSingleParagraph(text) {
+        const lines = text.split(/\n/);
+        const paraContent = [];
+        for (const line of lines) {
+            // Check for titles (allow optional leading whitespace)
+            const titleMatch = line.match(/^\s*(#+)\s+(.+)$/);
+            if (titleMatch && titleMatch[1] && titleMatch[2]) {
+                const size = titleMatch[1].length;
+                paraContent.push({
+                    type: "title",
+                    size,
+                    text: replaceMeta(titleMatch[2].trim()),
+                });
+                continue;
+            }
+            // Check for description (allow optional leading whitespace)
+            const descMatch = line.match(/^\s*~#\s+(.+)$/);
+            if (descMatch && descMatch[1]) {
+                paraContent.push({
+                    type: "desc",
+                    text: replaceMeta(descMatch[1].trim()),
+                });
+                continue;
+            }
+            if (line.trim() === "" || line.trim() === "\\n") {
+                paraContent.push({ type: "newline" });
+            }
+            else {
+                const cleanText = line.replace(/\\n/g, "").trim();
+                if (cleanText.length > 0) {
+                    const inline = parseInline(cleanText);
+                    // If image, push as block
+                    if (inline.length === 1 && inline[0].type === "image") {
+                        paraContent.push(inline[0]);
+                    }
+                    else {
+                        paraContent.push({ type: "text", content: inline });
+                    }
+                }
+            }
+        }
+        // Remove trailing newlines in paragraph
+        while (paraContent.length &&
+            paraContent[paraContent.length - 1].type === "newline") {
+            paraContent.pop();
+        }
+        return { type: "paragraph", content: paraContent };
+    }
+    function parseAsNormalContent(text) {
+        // Split by \np or two or more newlines for paragraphs
+        // In collapse content, also split on single empty lines for more consistent formatting
+        const paraSplitRegex = isCollapseContent
+            ? /(?:\\np|\n\s*\n)/
+            : /(?:\\np|\n{2,})/;
+        const rawParagraphs = text
+            .split(paraSplitRegex)
+            .map((p) => p.trim())
+            .filter(Boolean);
+        for (const rawPara of rawParagraphs) {
+            // Check if this paragraph is a table
+            if (isTable(rawPara)) {
+                result.content.push(parseTable(rawPara));
+                continue;
+            }
+            // Check if this paragraph is a list
+            if (isList(rawPara)) {
+                result.content.push(parseList(rawPara));
+                continue;
+            }
+            // Check if this paragraph contains mixed content (headings + lists)
+            // and should be split into separate elements
+            const mixedElements = parseMixedContent(rawPara);
+            if (mixedElements.length > 1) {
+                result.content.push(...mixedElements);
+                continue;
+            }
+            let para = rawPara.replace(/\\np/g, "");
+            const lines = para.split(/\n/);
+            const paraContent = [];
+            for (const line of lines) {
+                // Check for titles (allow optional leading whitespace)
+                const titleMatch = line.match(/^\s*(#+)\s+(.+)$/);
+                if (titleMatch && titleMatch[1] && titleMatch[2]) {
+                    const size = titleMatch[1].length;
+                    paraContent.push({
+                        type: "title",
+                        size,
+                        text: replaceMeta(titleMatch[2].trim()),
+                    });
+                    continue;
+                }
+                // Check for description (allow optional leading whitespace)
+                const descMatch = line.match(/^\s*~#\s+(.+)$/);
+                if (descMatch && descMatch[1]) {
+                    paraContent.push({
+                        type: "desc",
+                        text: replaceMeta(descMatch[1].trim()),
+                    });
+                    continue;
+                }
+                if (line.trim() === "" || line.trim() === "\\n") {
+                    paraContent.push({ type: "newline" });
+                }
+                else {
+                    const cleanText = line.replace(/\\n/g, "").trim();
+                    if (cleanText.length > 0) {
+                        const inline = parseInline(cleanText);
+                        // If image, push as block
+                        if (inline.length === 1 && inline[0].type === "image") {
+                            paraContent.push(inline[0]);
+                        }
+                        else {
+                            paraContent.push({ type: "text", content: inline });
+                        }
+                    }
+                }
+            }
+            // Remove trailing newlines in paragraph
+            while (paraContent.length &&
+                paraContent[paraContent.length - 1].type === "newline") {
+                paraContent.pop();
+            }
+            if (paraContent.length > 0) {
+                result.content.push({ type: "paragraph", content: paraContent });
+            }
+        }
+    }
+    // Helper functions for table parsing
+    function isTable(text) {
+        const lines = text.split(/\n/).map((line) => line.trim());
+        if (lines.length < 2)
+            return false; // Need at least header and separator
+        // Check if all lines have pipe characters
+        if (!lines.every((line) => line.includes("|")))
+            return false;
+        // Check for separator row (second row)
+        const secondLine = lines[1];
+        return secondLine ? /^\|?\s*:?-{3,}:?\s*\|/.test(secondLine) : false;
+    }
+    function parseTable(text) {
+        const lines = text.split(/\n/).map((line) => line.trim());
+        const table = {
+            type: "table",
+            rows: [],
+        };
+        // Parse alignment from separator row
+        const separatorRow = lines[1];
+        const alignments = separatorRow
+            ? separatorRow
+                .split("|")
+                .filter((cell) => cell.trim() !== "")
+                .map((cell) => {
+                const trimmed = cell.trim();
+                if (trimmed.startsWith(":") && trimmed.endsWith(":"))
+                    return "center";
+                if (trimmed.endsWith(":"))
+                    return "right";
+                return "left"; // Default alignment
+            })
+            : [];
+        // Process each row
+        lines.forEach((line, index) => {
+            if (index === 1)
+                return; // Skip separator row
+            // Skip empty rows
+            if (line.trim().replace(/\|/g, "").trim() === "")
+                return;
+            const cells = line
+                .split("|")
+                .filter((cell) => cell !== "") // Filter out empty strings from beginning/ending pipes
+                .map((cellContent, cellIndex) => {
+                return {
+                    content: parseInline(cellContent.trim()),
+                    align: cellIndex < alignments.length ? alignments[cellIndex] : "left",
+                };
+            });
+            table.rows.push({
+                cells,
+                isHeader: index === 0, // First row is header
+            });
+        });
+        return table;
+    }
+    // Helper functions for list parsing
+    function isList(text) {
+        const lines = text.split(/\n/).filter(Boolean);
+        if (lines.length === 0)
+            return false;
+        // Check if the first non-empty line is a list item
+        const firstLine = lines[0]?.trim();
+        if (!firstLine)
+            return false;
+        return /^\d+\.\s+/.test(firstLine) || /^[-*+]\s+/.test(firstLine);
+    }
+    function parseList(text) {
+        const lines = text.split(/\n/).filter(Boolean);
+        if (lines.length === 0)
+            return { type: "list", ordered: false, items: [] };
+        return parseListLines(lines, 0).list;
+    }
+    function parseListLines(lines, startIndex) {
+        const items = [];
+        let i = startIndex;
+        let currentListType = null;
+        let baseIndent = -1; // Track the base indentation level for this list
+        while (i < lines.length) {
+            const line = lines[i];
+            if (!line) {
+                i++;
+                continue;
+            }
+            const trimmedLine = line.trim();
+            // Skip empty lines
+            if (!trimmedLine) {
+                i++;
+                continue;
+            }
+            // Check indentation level
+            const indent = line.length - line.trimStart().length;
+            // If we've established a base indentation and this line is less indented,
+            // it belongs to a parent list
+            if (baseIndent >= 0 && indent < baseIndent) {
+                break;
+            }
+            // Check if this line is a list item
+            const orderedMatch = trimmedLine.match(/^(\d+)\.\s+(.+)$/);
+            const unorderedMatch = trimmedLine.match(/^([-*+])\s+(.+)$/);
+            if (!orderedMatch && !unorderedMatch) {
+                // Not a list item, stop parsing this list
+                break;
+            }
+            // Set base indentation from first item
+            if (baseIndent === -1) {
+                baseIndent = indent;
+                // Determine list type from first item
+                currentListType = orderedMatch ? "ordered" : "unordered";
+            }
+            else if (indent > baseIndent) {
+                // This item is more indented, it's a nested list, break to let parent handle it
+                break;
+            }
+            let content = "";
+            if (orderedMatch && orderedMatch[2]) {
+                content = orderedMatch[2];
+            }
+            else if (unorderedMatch && unorderedMatch[2]) {
+                content = unorderedMatch[2];
+            }
+            else {
+                i++;
+                continue;
+            }
+            // Create list item
+            const item = {
+                type: "list-item",
+                content: parseInline(content),
+            };
+            // Look ahead for nested lists
+            const nestedItems = [];
+            let j = i + 1;
+            while (j < lines.length) {
+                const nextLine = lines[j];
+                if (!nextLine) {
+                    j++;
+                    continue;
+                }
+                const nextTrimmed = nextLine.trim();
+                const nextIndent = nextLine.length - nextLine.trimStart().length;
+                // Empty line - continue checking
+                if (!nextTrimmed) {
+                    j++;
+                    continue;
+                }
+                // If this line has the same or less indentation as current item, stop looking for nested items
+                if (nextIndent <= indent) {
+                    break;
+                }
+                // If this line is a list item with greater indentation, it's nested
+                if (nextIndent > indent &&
+                    (/^\d+\.\s+/.test(nextTrimmed) || /^[-*+]\s+/.test(nextTrimmed))) {
+                    // Parse nested list starting from this line
+                    const nestedResult = parseListLines(lines, j);
+                    nestedItems.push(nestedResult.list);
+                    j = nestedResult.nextIndex;
+                }
+                else if (nextIndent > indent) {
+                    // Greater indentation but not a list item - this is indented content for the current item
+                    // Collect all lines with the same or greater indentation as additional content
+                    const contentLines = [];
+                    let k = j;
+                    while (k < lines.length) {
+                        const contentLine = lines[k];
+                        if (!contentLine) {
+                            // Keep empty lines
+                            contentLines.push("");
+                            k++;
+                            continue;
+                        }
+                        const contentIndent = contentLine.length - contentLine.trimStart().length;
+                        // If indentation drops below the content indentation level, we're done with this content block
+                        if (contentIndent < nextIndent) {
+                            break;
+                        }
+                        // Add this line to the content, preserving its indentation relative to nextIndent
+                        contentLines.push(contentLine.slice(nextIndent));
+                        k++;
+                    }
+                    // Process the collected content lines
+                    if (contentLines.length > 0) {
+                        // Check for complete code blocks - special handling for mermaid diagrams
+                        let isCompleteCodeBlock = false;
+                        let codeBlockLang = "";
+                        let codeContent = "";
+                        // Pattern to check if this is a complete code block
+                        const codeBlockPattern = /^\s*```(\w*)\n([\s\S]*?)\n\s*```\s*$/;
+                        const contentText = contentLines.join("\n");
+                        const codeMatch = contentText.match(codeBlockPattern);
+                        if (codeMatch) {
+                            isCompleteCodeBlock = true;
+                            codeBlockLang = codeMatch[1] || "";
+                            codeContent = codeMatch[2] || "";
+                        }
+                        if (isCompleteCodeBlock) {
+                            // Handle as a direct code block
+                            if (!item.content_blocks) {
+                                item.content_blocks = [];
+                            }
+                            item.content_blocks.push({
+                                type: "code",
+                                lang: codeBlockLang || undefined,
+                                content: codeContent
+                            });
+                        }
+                        else {
+                            // Normal content processing
+                            const contentBlocks = parseContentLines(contentLines);
+                            // Add content to the current list item
+                            if (!item.content_blocks) {
+                                item.content_blocks = [];
+                            }
+                            item.content_blocks.push(...contentBlocks);
+                        }
+                        j = k; // Move to the next line after the content block
+                    }
+                    else {
+                        // Not indented or a list item, skip
+                        j++;
+                    }
+                }
+                // Add nested lists to item if any
+                if (nestedItems.length > 0) {
+                    item.nested = nestedItems;
+                }
+                items.push(item);
+                i = j; // Move to the next unprocessed line
+            }
+            return {
+                list: {
+                    type: "list",
+                    ordered: currentListType === "ordered",
+                    items: items,
+                },
+                nextIndex: i,
+            };
+        }
+        return result;
+    }
+}

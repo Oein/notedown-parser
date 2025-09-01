@@ -268,9 +268,9 @@ export function parseNotedown(
   // Parse content
   const contentText = processedLines.join("\n");
 
-  // Handle code blocks first
-  const codeBlockRegex = /^```(\w+)?\n([\s\S]*?)\n```$/gm;
-  const blocks: { type: string; content: string; lang?: string }[] = [];
+  // Handle code blocks first - allow for indentation before code blocks
+  const codeBlockRegex = /^(\s*)```(\w+)?\n([\s\S]*?)\n\s*```$/gm;
+  const blocks: { type: string; content: string; lang?: string; indentLevel?: number }[] = [];
   let lastIndex = 0;
   let match;
 
@@ -283,13 +283,21 @@ export function parseNotedown(
       }
     }
 
+    // Calculate indentation level for later processing
+    const indentLevel = match[1] ? match[1].length : 0;
+
     // Add code block with proper property order
-    const codeBlock: any = { type: "code" };
-    if (match[1]) {
-      codeBlock.lang = match[1];
+    const codeBlock: any = { 
+      type: "code", 
+      indentLevel // Store the indent level for later
+    };
+    
+    if (match[2]) { // match[1] is the indentation, match[2] is the language
+      codeBlock.lang = match[2];
     }
+    
     // Only unescape \``` (backslash followed by exactly 3 backticks) but keep other escapes
-    codeBlock.content = (match[2] || "").replace(/\\```/g, "```");
+    codeBlock.content = (match[3] || "").replace(/\\```/g, "```");
     blocks.push(codeBlock);
     lastIndex = match.index + match[0].length;
   }
@@ -435,6 +443,38 @@ export function parseNotedown(
       }
       return line; // Keep empty lines as is
     });
+
+    // Check for code blocks with indentation - special handling for mermaid and code
+    // We need to check for code blocks before joining lines to preserve indentation
+    let codeBlockStart = -1;
+    let codeBlockLang = "";
+    let inCodeBlock = false;
+    
+    // First pass to check if this is a single code block
+    for (let i = 0; i < processedLines.length; i++) {
+      const currentLine = processedLines[i] || "";
+      const line = currentLine.trim();
+      if (!inCodeBlock && line.startsWith("```")) {
+        inCodeBlock = true;
+        codeBlockStart = i;
+        codeBlockLang = line.slice(3).trim(); // Extract language
+      } else if (inCodeBlock && line === "```") {
+        // We found a complete code block - if it's the only content, return it directly
+        if (codeBlockStart === 0 && i === processedLines.length - 1) {
+          // Extract the code content
+          const codeContent = processedLines
+            .slice(codeBlockStart + 1, i)
+            .join("\n");
+          
+          return [{
+            type: "code",
+            lang: codeBlockLang || undefined,
+            content: codeContent
+          }];
+        }
+        inCodeBlock = false;
+      }
+    }
 
     // Join lines back and parse as a full Notedown document to handle nested collapses
     const contentText = processedLines.join("\n");
@@ -935,16 +975,43 @@ export function parseNotedown(
 
           // Process the collected content lines
           if (contentLines.length > 0) {
-            // Parse the content as a paragraph or other block element
+            // Check for complete code blocks - special handling for mermaid diagrams
+            let isCompleteCodeBlock = false;
+            let codeBlockLang = "";
+            let codeContent = "";
+            
+            // Pattern to check if this is a complete code block
+            const codeBlockPattern = /^\s*```(\w*)\n([\s\S]*?)\n\s*```\s*$/;
             const contentText = contentLines.join("\n");
-            const contentBlocks = parseContentLines(contentLines);
-
-            // Add content to the current list item
-            if (!item.content_blocks) {
-              item.content_blocks = [];
+            const codeMatch = contentText.match(codeBlockPattern);
+            
+            if (codeMatch) {
+              isCompleteCodeBlock = true;
+              codeBlockLang = codeMatch[1] || "";
+              codeContent = codeMatch[2] || "";
             }
-            item.content_blocks.push(...contentBlocks);
-          }
+            
+            if (isCompleteCodeBlock) {
+              // Handle as a direct code block
+              if (!item.content_blocks) {
+                item.content_blocks = [];
+              }
+              
+              item.content_blocks.push({
+                type: "code",
+                lang: codeBlockLang || undefined,
+                content: codeContent
+              });
+            } else {
+              // Normal content processing
+              const contentBlocks = parseContentLines(contentLines);
+
+              // Add content to the current list item
+              if (!item.content_blocks) {
+                item.content_blocks = [];
+              }
+              item.content_blocks.push(...contentBlocks);
+            }
 
           j = k; // Move to the next line after the content block
         } else {
