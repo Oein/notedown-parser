@@ -1,0 +1,16 @@
+\meta slug=mc-hude-maze
+\meta title=[마인크래프트] 초거대 미로
+\meta writeAt=D20241004
+\meta category=취미
+
+![image.png](%5B%EB%A7%88%EC%9D%B8%ED%81%AC%EB%9E%98%ED%94%84%ED%8A%B8%5D%20%EC%B4%88%EA%B1%B0%EB%8C%80%20%EB%AF%B8%EB%A1%9C%20115065b0f5e6809c99e2d4c0ef5cccb8/image.png)
+
+초거대 마인크래프트 미로 제작하기
+
+이 미로는 혜성이라는 마인크래프트 컴파일러를 통해 미로 제작 데이터팩을 만들어 제작했다. 미로 제작 알고리즘은 https://medium.com/@msgold/using-python-to-create-and-solve-mazes-672285723c96 이분의 글을 참조하였다.
+
+미로 생성 코드는 https://github.com/Oein/planet_docs/tree/main/example/maze 요기에 있다.
+
+맵은 요기. 시작은 -519 -60 -1562, 끝은 -36 -60 -1561!
+
+[아카이브.7z](%5B%EB%A7%88%EC%9D%B8%ED%81%AC%EB%9E%98%ED%94%84%ED%8A%B8%5D%20%EC%B4%88%EA%B1%B0%EB%8C%80%20%EB%AF%B8%EB%A1%9C%20115065b0f5e6809c99e2d4c0ef5cccb8/%25E1%2584%258B%25E1%2585%25A1%25E1%2584%258F%25E1%2585%25A1%25E1%2584%258B%25E1%2585%25B5%25E1%2584%2587%25E1%2585%25B3.7z)

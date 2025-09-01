@@ -1,0 +1,43 @@
+{
+  "name": "notedown",
+  "version": "1.0.0",
+  "description": "A markdown-like parser and renderer with extended syntax support",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "webpack --mode=production",
+    "dev": "webpack --mode=development --watch",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "markdown",
+    "parser",
+    "renderer",
+    "notedown"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/highlight.js": "^10.1.0",
+    "@types/jsdom": "^21.1.7",
+    "highlight.js": "^11.10.0",
+    "jsdom": "^25.0.1",
+    "playwright": "^1.55.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "peerDependencies": {
+    "highlight.js": "^11.10.0"
+  }
+}

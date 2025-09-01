@@ -1,0 +1,47 @@
+\meta title=Table Examples
+\meta author=Notedown Team
+
+# Table Support in Notedown
+
+This sample demonstrates the table feature in Notedown.
+
+## Basic Table
+
+| Header 1 | Header 2 | Header 3 |
+| -------- | -------- | -------- |
+| Row 1    | Data     | Value    |
+| Row 2    | Data     | Value    |
+
+## Table with Alignment
+
+| Left-aligned | Center-aligned | Right-aligned |
+| :----------- | :------------: | ------------: |
+| Left         | Center         | Right         |
+| Column       | Column         | Column        |
+
+## Table with Formatting
+
+| Format Type | Example                                    |
+| ----------- | ------------------------------------------ |
+| **Bold**    | This text is in **bold**.                  |
+| *Italic*    | This text is in *italic*.                  |
+| `Code`      | This is `inline code`.                     |
+| Links       | This is a [link to Google](https://google.com). |
+
+## Table with Meta References
+
+| Property | Value         |
+| -------- | ------------- |
+| Title    | @{title}      |
+| Author   | @{author}     |
+| Count    | 3 tables      |
+
+## Complex Table Example
+
+| Feature | Description | Support | Example |
+| ------- | ----------- | :-----: | ------- |
+| Headers | Table headers | ✅ | The first row |
+| Alignment | Text alignment | ✅ | Left, center, right |
+| Formatting | Text styling | ✅ | **Bold**, *Italic* |
+| Meta Refs | Variable references | ✅ | @{title} |
+| LaTeX | Math formulas | ✅ | $E = mc^2$ |

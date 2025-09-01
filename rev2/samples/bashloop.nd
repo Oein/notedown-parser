@@ -1,0 +1,21 @@
+\meta slug=bash-for-loop
+\meta title=[코딩] Bash에서 모든 파일을 for-loop
+\meta category=코딩
+\meta writeAt=D20241101
+
+```bash
+for filename in [file selector];
+do
+ echo "$filename"
+done
+```
+
+요런식으로 파일들을 돌 수 있다. 실생활 예시를 들면 아래처럼 할 수 있다.
+
+```bash
+# ogg2wav
+for filename in *.ogg;
+do
+ ffmpeg -i "$filename" -ac 1 -ar 44100 -acodec pcm_s16le "./out/$filename.wav"
+done
+```

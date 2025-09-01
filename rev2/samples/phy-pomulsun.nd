@@ -1,0 +1,41 @@
+\meta slug=phy-pomulsun
+\meta title=[물리] 비스듬히 던진 물체의 운동, 포물선 운동
+\meta writeAt=D20250111
+\meta category=물리
+
+포물선 운동은 $x$축 이동인 **등속도 운동**과 $y$축 이동인 **연직상방 운동**2가지로 볼 수 있다.
+
+![CleanShot 2025-01-11 at 00.52.35@2x.png](%5B%EB%AC%BC%EB%A6%AC%5D%20%EB%B9%84%EC%8A%A4%EB%93%AC%ED%9E%88%20%EB%8D%98%EC%A7%84%20%EB%AC%BC%EC%B2%B4%EC%9D%98%20%EC%9A%B4%EB%8F%99,%20%ED%8F%AC%EB%AC%BC%EC%84%A0%20%EC%9A%B4%EB%8F%99%20177065b0f5e6809aba2dfdd8f4cabf41/CleanShot_2025-01-11_at_00.52.352x.png)
+
+그래프로 표현하면 이런식이다.
+
+![CleanShot 2025-01-11 at 00.55.37@2x.png](%5B%EB%AC%BC%EB%A6%AC%5D%20%EB%B9%84%EC%8A%A4%EB%93%AC%ED%9E%88%20%EB%8D%98%EC%A7%84%20%EB%AC%BC%EC%B2%B4%EC%9D%98%20%EC%9A%B4%EB%8F%99,%20%ED%8F%AC%EB%AC%BC%EC%84%A0%20%EC%9A%B4%EB%8F%99%20177065b0f5e6809aba2dfdd8f4cabf41/CleanShot_2025-01-11_at_00.55.372x.png)
+
+물체의 운동은 최고점을 기준으로 반전되어 있음을 알 수 있다.
+
+# 최고점의 높이 구하기
+
+발사각을 $\theta$, 초기 속도를 $v_0$라고 하면 $y$축 이동 속도는 $v_0sin\theta$임을 알 수 있다.
+
+또한 최고점에서의 $y$축 속도는 0이 되므로 등가속도 운동 공식을 통해 최고점의 높이를 알 수 있다. $-2gH=0 - v_0^2$ → $H=\frac{v_0^2}{2g}$
+
+# 최대거리 발사각 구하기
+
+$R=v_x*T_H*2=v_0cos\theta * \frac{v_0sin\theta}{g} * 2$이다.
+
+그렇다면 $sin(\alpha+\beta)=sin\alpha cos\beta + sin\beta cos\alpha$를 이용하는데 이때, $\alpha = \beta = \theta$라고 한다면 $sin2\theta=2*sin\theta*cos\theta$ 이다. 다시 이 식을 처음 식에 적용한다면, $R = \frac{v_0 * sin2\theta}{g}$가 되는데 이가 최대가 되려면 $2\theta = 90$이 되야 하기에 최대 거리 발사각은 $45\degree$가 되게 된다.
+
+# 에너지적 관점에서 보기
+
+에너지적으로 본다면 초기 운동에너지 $\frac{1}{2}mv^2$는 최고점에서의 에너지 $mgH+\frac{1}{2}m(vcos\theta)^2$랑 같게 된다. 이때 $sin^2\theta+cos^2\theta=1$을 쓰게 된다면 $mgH=\frac{1}{2}m(vsin\theta)^2$가 되게 된다.
+
+<aside>
+⚠️
+
+최고점에서 y축 이동만이 0인것이지, x축 이동은 계속 존재하기 때문에 $\theta=90$이 아닌이상 $mgH=\frac{1}{2}mv^2$이 될 수 없다.
+
+</aside>
+
+이들을 그래프로 나타낸다면 아래와 같은 그래프가 나오게 된다.
+
+![CleanShot 2025-01-11 at 01.07.56@2x.png](%5B%EB%AC%BC%EB%A6%AC%5D%20%EB%B9%84%EC%8A%A4%EB%93%AC%ED%9E%88%20%EB%8D%98%EC%A7%84%20%EB%AC%BC%EC%B2%B4%EC%9D%98%20%EC%9A%B4%EB%8F%99,%20%ED%8F%AC%EB%AC%BC%EC%84%A0%20%EC%9A%B4%EB%8F%99%20177065b0f5e6809aba2dfdd8f4cabf41/CleanShot_2025-01-11_at_01.07.562x.png)

@@ -1,0 +1,9 @@
+본문 안에서 **Bold체** *Italic 체* __Underline__ ~~Crossline~~ `Code` `Code with \` code syntax mark`
+
+본문을 |f#red,빨간 글씨| |b#blue,파란 배경| |f#fff,b#000,검정 배경 흰 글씨| |\f#그저 아무것도 꾸미지 않았으나 색칠 문법 쓰기|
+본몬을 \|f#red,빨간 글씨로 표현되는 문법을 가진 그냥 글씨\| |색칠 구문 안에 있으나 아무 색칠도 하지 않은 글씨|
+
+링크 넣기 [링크 텍스트](https://google.com)
+
+이미지 넣기
+![이미지 alt](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png)

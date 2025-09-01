@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notedown List Test</title>
+    <script type="module">
+      import { parseAndRender } from "./dist/notedown.esm.js";
+
+      const content = `# [생물] 호르몬
+
+# 1. 신호전달
+
+1. 시각정 정보전달
+    
+    장점: 많은 양의 정보 전달
+    
+    단점 : 방향의 일치가 필요함
+    
+    매질이 없을때 가장 빠름 (빛의 전달이기 때문)
+    
+2. 청각정 정보전달
+    
+    장점 : 방향의 일치가 필요하지 않음
+    
+    단점 : 적은 양의 정보 전달
+    
+    매질이 필요함 (파동 "소리"의 의한 전달)
+    
+3. 화학적 정보전달
+    
+    장점 : 많은 양의 정보 전달, 방향의 일치 필요 X
+    
+    단점 : 없음
+    
+    페로몬에 의한 전달 (게체와 게체사이의 전달)
+    
+    ⇒ ex: 개미들 끼리 소통
+    
+    호르몬에 의한 전달 (게체 내부의 신호 전달)
+    
+    \`A가 B에게\` : 이웃분비호르몬
+    
+    \`T가 T에게\` : 자기분비 호르몬`;
+
+      try {
+        const result = parseAndRender(content);
+        document.getElementById("output").innerHTML = result.html;
+        
+        // Add the CSS to head
+        const style = document.createElement('style');
+        style.textContent = result.css;
+        document.head.appendChild(style);
+        
+        console.log('✅ List parsing test completed successfully');
+      } catch (error) {
+        console.error('❌ Error:', error);
+        document.getElementById("output").innerHTML = 
+          `<div style="color: red;">Error: ${error.message}</div>`;
+      }
+    </script>
+    <style>
+      body { 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; 
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      #output { 
+        border: 1px solid #ddd; 
+        padding: 2rem; 
+        margin-top: 2rem;
+        border-radius: 8px;
+      }
+      h1 { 
+        color: #333; 
+        margin-top: 0; 
+      }
+      .status {
+        background: #f0f0f0;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Notedown List Support Test</h1>
+    <div class="status">
+      <strong>Testing:</strong> Korean numbered lists with nested content
+    </div>
+    <div id="output">Loading...</div>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    // Target and module
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "node",
+
+    // Declaration files for NPM package
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+
+    // Emit settings
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+
+    // Source maps
+    "sourceMap": true,
+
+    // Strict type checking
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+
+    // Module resolution
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // Advanced
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests",
+    "**/*.test.ts",
+    "debug.ts",
+    "temp-debug*.ts"
+  ]
+}
